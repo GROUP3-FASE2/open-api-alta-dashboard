@@ -1,0 +1,756 @@
+openapi: 3.0.0
+info:
+  description: |
+    Dokumen open-api aplikasi Alta Dashboard
+  version: "1.0.0"
+  title: Alta Dashboard
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    email: apiteam@swagger.io
+  license: 
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: Base URL Server GCP
+    url: http://54.179.170.113:8000
+  - description: SwaggerHub API Auto Mocking
+    url: //https://virtserver.swaggerhub.com/alta_dashhboard/alta_dashbaordt3/1.0.0
+  - description: BE servers
+    url: https://{environment}.api.alta.id
+    variables:
+      environment:
+        default: dev
+        enum:
+          - "dev"
+          - "prod"
+tags:
+  - name: Dashboard 
+    description: API menampilkan inforamsi dashboard
+  - name: User #login, register, lihat profile user, update profile user, delelte profile (non aktif dgn delete gorm)
+    description: API mengelola fitur User  
+  - name: Class
+    description:  API mengelola fitur Class  
+  - name: Mentee
+    description:  API mengelola fitur Mentee
+  - name: Log
+    description:  API mengelola fitur Log / Feedback mentee
+
+paths:
+  /login:
+    post:
+      summary: "Login User"
+      tags:
+      - "Auth"
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                "email":
+                  type: string
+                "password":
+                  type: string
+            example:
+              email: "budi123@gmail.com"
+              password: "123"
+      responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithData"
+              example:
+                status: "Success"
+                message: "Login Success"
+                data:
+                  id: 1
+                  full_name: "Budiman"
+                  email: "budi123@gmail.com"
+                  team: "Academic"
+                  role: "User"
+                  status: "Active"
+                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2NzAwMzYwMjcsInJvbGUiOiJ1c2VyIiwidXNlcklkIjoxfQ.pT-FmSraUUb8HY73ofYbbt3vFgbej0XaHP9VMas8Q44"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+  /users:
+    post:
+      tags:
+        - Users
+      summary: "Insert Data User" 
+      description: "Register User dengan role User. Field role otomatis akan diinput user."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/InsertUserObject"
+            example:
+              full_name: "Budiman"
+              email: "budi123@gmail.com"
+              password: "123"
+              team: "Academic"
+              status: "Active" 
+      responses:
+        '201':
+          description: "Success create data"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithData"
+              example:
+                status: "Success"
+                message: "User successfully created"
+                data:
+                  id: 1
+                  full_name: "Budiman"
+                  email: "budi123@gmail.com"
+                  team: "Academic"
+                  role: "User"
+                  status: "Active"  
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    get:
+      tags:
+        - Users
+      summary: get all users
+      description: Melihat seluruh data user
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: name
+          description: "nama user"
+          required: false
+          in: query
+          schema:
+            type: string
+            example: "budi"
+        - name: address
+          description: "alamat user"
+          required: false
+          in: query
+          schema:
+            type: string
+            example: "jakarta"
+        - name: limit
+          description: "limit"
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: 10
+        - name: offset
+          description: "offset"
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  status: "success"
+                  message: "success get all users"
+                  data:
+                    - id: 1
+                      name: "budi"
+                      email: "budi@mail.com"
+                      address: "surabaya"
+                    - id: 2
+                      name: "rudi"
+                      email: "rudi@mail.com"
+                      address: "surabaya"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+  /users/{id_user}:
+    get:
+      tags:
+        - Users
+      summary: get all users
+      description: Melihat seluruh data user
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id_user
+          description: "id user"
+          required: true
+          in: path
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  status: "success"
+                  message: "success get all users"
+                  data:
+                    - id: 1
+                      name: "budi"
+                      email: "budi@mail.com"
+                      address: "surabaya"
+                    - id: 2
+                      name: "rudi"
+                      email: "rudi@mail.com"
+                      address: "surabaya"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    delete:
+      tags:
+        - Users
+      summary: delete users
+      description: Melihat seluruh data user
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id_user
+          description: "id user"
+          required: true
+          in: path
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  status: "success"
+                  message: "success delete users"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    put:
+      tags:
+        - Users
+      summary: update users
+      description: Melihat seluruh data user
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id_user
+          description: "id user"
+          required: true
+          in: path
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: "budi"
+                email: "budi@mail.com"
+                password: "qwerty"
+                phone: "0822349"
+                address: "surabaya"
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  status: "success"
+                  message: "success delete users"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+  /products:
+    get:
+      tags:
+        - Products
+      summary: get all users
+      description: Melihat seluruh data user
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: name
+          description: "nama user"
+          required: false
+          in: query
+          schema:
+            type: string
+            example: "budi"
+        - name: address
+          description: "alamat user"
+          required: false
+          in: query
+          schema:
+            type: string
+            example: "jakarta"
+        - name: limit
+          description: "limit"
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: 10
+        - name: offset
+          description: "offset"
+          required: false
+          in: query
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  status: "success"
+                  message: "success get all users"
+                  data:
+                    - id: 1
+                      name: "budi"
+                      email: "budi@mail.com"
+                      address: "surabaya"
+                    - id: 2
+                      name: "rudi"
+                      email: "rudi@mail.com"
+                      address: "surabaya"
+        '404':
+          $ref: '#/components/responses/404'
+
+####################################
+#  COMPONENTS
+####################################
+components:
+  securitySchemes:
+    JWTAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "JWT Token that generate after login."
+
+  schemas:
+
+### User Schemas
+    "GetUserObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "full_name":
+          type: string
+        "email":
+          type: string
+        "team":
+          type: string
+        "role":
+          type: string
+        "status":
+          type: string    
+    "ArrayUserObj":
+      type: array
+      items :
+        $ref: "#/components/schemas/GetUserObject"
+    "InsertUserObject":
+      type: object
+      properties:
+        "full_name":
+          type: string
+        "email":
+          type: string
+        "password":
+          type: string
+        "team":
+          type: string
+        "status":
+          type: string  
+    "EditUserObject":
+      type: object
+      properties:
+        "full_name":
+          type: string
+        "email":
+          type: string
+        "password":
+          type: string
+        "team":
+          type: string
+        "status":
+          type: string
+
+### Class Schemas
+    "GetClassObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "name":
+          type: string
+        "class_code":
+          type: string  
+    "ArrayClassObj":
+      type: array
+      items :
+        $ref: "#/components/schemas/GetClassObject"
+    "InsertClassObject":
+      type: object
+      properties:
+        "name":
+          type: string
+        "class_code":
+          type: string 
+    "EditClassObject":
+      type: object
+      properties:
+        "name":
+          type: string
+        "class_code":
+          type: string  
+
+### Mentee Schemas
+    "GetMenteeObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "name":
+          type: string
+        "status":
+          type: string
+        "gender":
+          type: string
+        "nickname":
+          type: string
+        "address":
+          type: string    
+        "home_address":
+          type: string    
+        "email":
+          type: string    
+        "telegram":
+          type: string    
+        "discord":
+          type: string    
+        "phone":
+          type: string    
+        "emergency_name":
+          type: string    
+        "emergency_phone":
+          type: string    
+        "emergency_status":
+          type: string    
+        "education_type":
+          type: string    
+        "education_major":
+          type: string    
+        "education_graduate":
+          type: string    
+        "id_class":
+          type: string      
+    "ArrayMenteeObj":
+      type: array
+      items :
+        $ref: "#/components/schemas/GetMenteeObject"
+    "InsertMenteeObject":
+      type: object
+      properties:
+        "name":
+          type: string
+        "status":
+          type: string
+        "gender":
+          type: string
+        "nickname":
+          type: string
+        "address":
+          type: string    
+        "home_address":
+          type: string    
+        "email":
+          type: string    
+        "telegram":
+          type: string    
+        "discord":
+          type: string    
+        "phone":
+          type: string    
+        "emergency_name":
+          type: string    
+        "emergency_phone":
+          type: string    
+        "emergency_status":
+          type: string    
+        "education_type":
+          type: string    
+        "education_major":
+          type: string    
+        "education_graduate":
+          type: string    
+        "id_class":
+          type: string   
+    "EditMenteeObject":
+      type: object
+      properties:
+        "name":
+          type: string
+        "status":
+          type: string
+        "gender":
+          type: string
+        "nickname":
+          type: string
+        "address":
+          type: string    
+        "home_address":
+          type: string    
+        "email":
+          type: string    
+        "telegram":
+          type: string    
+        "discord":
+          type: string    
+        "phone":
+          type: string    
+        "emergency_name":
+          type: string    
+        "emergency_phone":
+          type: string    
+        "emergency_status":
+          type: string    
+        "education_type":
+          type: string    
+        "education_major":
+          type: string    
+        "education_graduate":
+          type: string    
+        "id_class":
+          type: string    
+
+### Log Schemas
+    "GetLogObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "title":
+          type: string
+        "feedback":
+          type: string  
+        "status":
+          type: string  
+        "id_mentee":
+          type: integer  
+        "id_user":
+          type: integer  
+    "ArrayLogObj":
+      type: array
+      items :
+        $ref: "#/components/schemas/GetLogObject"
+    "InsertLogObject":
+      type: object
+      properties:
+        "title":
+          type: string
+        "feedback":
+          type: string  
+        "status":
+          type: string  
+        "id_mentee":
+          type: integer  
+        "id_user":
+          type: integer  
+    "EditLogObject":
+      type: object
+      properties:
+        "title":
+          type: string
+        "feedback":
+          type: string  
+        "status":
+          type: string  
+        "id_mentee":
+          type: integer  
+        "id_user":
+          type: integer  
+
+### Other Schemas
+    "ResponseWithoutData":
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+    "ResponseWithData":
+      type: object
+      properties:
+        status:
+          type: string
+        message: 
+          type: string
+        data:
+          type: object
+    "SuccesArrayUserResult":
+      type: object
+      properties:
+        status:
+          type: string
+        message: 
+          type: string
+        data:
+          type: array
+          items : 
+            $ref: "#/components/schemas/ArrayUserObj"
+    "SuccesArrayClassResult":
+      type: object
+      properties:
+        status:
+          type: string
+        message: 
+          type: string
+        data:
+          type: array
+          items : 
+            $ref: "#/components/schemas/ArrayClassObj" 
+    "SuccesArrayMenteeResult":
+      type: object
+      properties:
+        status:
+          type: string
+        message: 
+          type: string
+        data:
+          type: array
+          items : 
+            $ref: "#/components/schemas/ArrayMenteeObj" 
+    "SuccesArrayLogResult":
+      type: object
+      properties:
+        status:
+          type: string
+        message: 
+          type: string
+        data:
+          type: array
+          items : 
+            $ref: "#/components/schemas/ArrayLogObj" 
+
+### Responses Schemas
+  responses:
+    '200':
+      description: "Success Process Data"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+              data:
+                type: object
+    '201':
+      description: "Success Create Data"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+              data:
+                type: object
+    '400':
+      description: "Wrong Request From User"
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: "Process Failed. Please check your input."
+    '401':
+      description: "Authorization information is missing or invalid."
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: "Process Failed. User not authorized for this request."
+    '404':
+      description: "Page not found or wrong url. Please check again."
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: "Process Failed. User not authorized for this request."
+    '500':
+      description: "Error process on server"
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: "Process Failed. Please check server."

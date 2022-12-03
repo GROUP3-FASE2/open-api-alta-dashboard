@@ -1,0 +1,1422 @@
+openapi: 3.0.0
+info:
+  description: |
+    Dokumen open-api aplikasi Alta Dashboard
+  version: "1.0.0"
+  title: Alta Dashboard
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    email: apiteam@swagger.io
+  license: 
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: Base URL Server GCP
+    url: http://54.179.170.113:8000
+  - description: SwaggerHub API Auto Mocking
+    url: //https://virtserver.swaggerhub.com/alta_dashhboard/alta_dashbaordt3/1.0.0
+tags:
+  - name: Dashboard 
+    description: API menampilkan inforamsi dashboard
+  - name: User #login, register, lihat profile user, update profile user, delelte profile (non aktif dgn delete gorm)
+    description: API mengelola fitur User  
+  - name: Class
+    description:  API mengelola fitur Class  
+  - name: Mentee
+    description:  API mengelola fitur Mentee
+  - name: Log
+    description:  API mengelola fitur Log / Feedback mentee
+  
+paths:
+  /login:
+    post:
+      summary: "Login User"
+      tags:
+      - "Auth"
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                "email":
+                  type: string
+                "password":
+                  type: string
+            example:
+              email: "budi123@gmail.com"
+              password: "123"
+      responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccesLoginResult"
+              example:
+                message: "Login Success"
+                data:
+                  id: 1
+                  full_name: "Budiman"
+                  email: "budi123@gmail.com"
+                  team: "Academic"
+                  role: "User"
+                  status: "Active"
+                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2NzAwMzYwMjcsInJvbGUiOiJ1c2VyIiwidXNlcklkIjoxfQ.pT-FmSraUUb8HY73ofYbbt3vFgbej0XaHP9VMas8Q44"
+        "400" :
+          $ref : "#/components/responses/400"  
+        '500':
+          $ref: "#/components/responses/500"
+
+  /register :
+    post:
+      security:
+        - bearerAuth: []
+      summary: "Insert Data User"
+      tags:
+      - "User"
+      requestBody:
+        description: "Register User dengan role User. Field role otomatis akan diinput user."
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/InsertUserObject"
+            example:
+              full_name: "Budiman"
+              email: "budi123@gmail.com"
+              password: "123"
+              team: "Academic"
+              status: "Active"     
+      responses:
+        "201":
+          description: "Success create data"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "User successfully created"
+                data:
+                  id: 1
+                  full_name: "Budiman"
+                  email: "budi123@gmail.com"
+                  team: "Academic"
+                  role: "User"
+                  status: "Active"  
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"
+        '500':
+          $ref: "#/components/responses/500"
+  /users :
+    put: 
+      security:
+        - bearerAuth: []
+      summary: "Update Data user"
+      tags:
+        - "User"
+      parameters:
+      - name : id
+        in : path
+        description: "Id User to update data"
+        required: true
+        schema :
+          type: integer
+        examples:
+          1 :
+            description: "Id user 1 "
+            value : 1
+      requestBody:
+        description: "Update data User. Field role tidak bisa di ganti."
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/EditUserObject"
+            example:
+              full_name: "Budiman"
+              email: "budi123@gmail.com"
+              password: "123"
+              team: "Academic"
+              status: "Active"     
+      responses:
+        '200':
+          description: "Success update data"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "User successfully updated"
+                data:
+                  id: 1
+                  full_name: "Budiman"
+                  email: "budi123@gmail.com"
+                  team: "Academic"
+                  role: "User"
+                  status: "Active"
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"           
+        '500':
+          $ref: "#/components/responses/500"
+    delete:
+      security:
+        - bearerAuth: []
+      summary: "Delete User Data"
+      tags:
+        - "User"
+      responses:
+        "200":
+          description: "Success Delete Data"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "Success Delete Data"
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+
+  /users/username:
+    get: 
+      summary: "Profil User"
+      description: "Menggunakan username untuk mencari profil user. Dapat diakses tanpa token."
+      tags:
+        - "User"
+      responses:
+        "200":
+          description: "Success Profile"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "User successfully Profile"
+                data:
+                  id: 1
+                  username: "adidas"
+                  email: "adidas@gmail.com"
+                  name: "adidas Feet"
+                  phone: "08771079"
+                  address: "jl.gunung anthena 1 no 11a, denpasar barat, Bali"
+                  shop_name: "Adidas Store"
+                  image_url: "https://upload.wikimedia.org/wikipedia/commons/f/fe/Logo_Adidas.png"
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+  /me:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Get me data User."
+      description: "Menampilkan data profil user yang sedang login. Membutuhkan Token."
+      tags:
+        - "User"
+      responses:
+        "200":
+          description: "Success User Me"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "User successfully Me"
+                data:
+                  id: 1
+                  username: "adidas"
+                  email: "adidas@gmail.com"
+                  name: "adidas Feet"
+                  phone: "08771079"
+                  address: "jl.gunung anthena 1 no 11a, denpasar barat, Bali"
+                  shop_name: "Adidas Store"
+                  image_url: "https://upload.wikimedia.org/wikipedia/commons/f/fe/Logo_Adidas.png"
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+
+########## PRODUCT ##########
+
+  /products:
+    post:
+      security:
+        - bearerAuth: []
+      summary: "Post data Product"
+      tags:
+        - "Product"
+      requestBody:
+        description: "Post data Product tanpa id user yang input(seller) dan shop name karena akan diambil dari token."
+        required: true
+        content:
+          "multipart/form-data":
+            schema:
+              $ref: "#/components/schemas/InsertProductObject"
+            example:
+              product_name: "Adidas Response Plus"
+              price: 2000000
+              description: |
+                Adidas Response Plus bisa jadi pilihan buat kamu yang senang lari sore di taman sekitar rumah. Menggunakan bahan air mesh, sepatu yang dibanderol dengan harga Rp. 1.599.000 ini mengedepankan fitur sirkulasi udara untuk kaki kamu biar terus terasa nyaman dan nggak gampang berkeringat. Selain itu, outsole-nya menggunakan teknologi Stretchweb yang menyesuaikan pergerakan kaki kamu ketika memijak. 
+              stock: 20
+              category: "style"
+              file: "9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBhQSERUUExQVFRUWGRwaGBgYGB0dGxkcHxccGxocGxoYHCYgGxojHBsdHy8gJCgpLSwsGB4xNTAqNSYrLCkBCQoKDgwOGg8PGiklHx8pLCwpKSkpKSwpLCkpKSwpLCksKSwsLCkpKSkpLCkpKSwpLCwsKSwsLCksKSkpKSksKf/AABEIAJ0BQQMBIgACEQEDEQH/xAAcAAACAwEBAQEAAAAAAAAAAAAEBQIDBgEABwj/xABFEAACAQIEBAQDBgMGAwcFAAABAhEDIQAEEjEFQVFhBhMicTKBkRRCobHB8CNS0QcVM1Ni4RaS8TRygpOiwtIkQ1RVY//EABoBAAIDA."
+            encoding:
+              file:
+                contentType: image/png, image/jpeg                   
+      responses:
+        "201":
+          description: "Success Post Product"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "Product successfully Post"
+                data:
+                  id: 1
+                  product_name: "Adidas Response Plus"
+                  price: 2000000
+                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
+                  description: |
+                    Adidas Response Plus bisa jadi pilihan buat kamu yang senang lari sore di taman sekitar rumah. Menggunakan bahan air mesh, sepatu yang dibanderol dengan harga Rp. 1.599.000 ini mengedepankan fitur sirkulasi udara untuk kaki kamu biar terus terasa nyaman dan nggak gampang berkeringat. Selain itu, outsole-nya menggunakan teknologi Stretchweb yang menyesuaikan pergerakan kaki kamu ketika memijak. 
+                  stock: 20
+                  category: "style"
+                  shop_name: "Adidas Shop"
+                  id_user_seller: 1
+              encoding:
+                file:
+                  contentType: image/png, image/jpeg  
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+    get:
+      summary: "Get All data Product"
+      tags:
+        - "Product"
+      parameters:
+        - name: id_user_seller
+          in: query
+          description: "Id user as seller. Get product that sell by 1 user. If empty will get from all user."
+          required: false 
+          schema:
+            type: integer
+          examples:            
+            "":
+              description: "no id parameter"
+              value: 
+            1:
+              description: "User with id 1"
+              value: 1
+            2:
+              description: "User with id 2"
+              value: 2
+        - name: category
+          in: query
+          description: "Query Get Product using filter by 1 category. If empty will get from all category. Input using lowercase"
+          required: false 
+          schema:
+            type: string
+          examples:
+            "":
+              description: "no category parameter"
+              value: 
+            "style":
+              description: "Get Product filter by style category."
+              value: "style"
+            "books":
+              description: "Get Product filter by books category."
+              value: "style" 
+      responses:
+        "200":
+          description: "Success Get All data Product"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccesArrayProductResult"
+              example:
+                message: "Get All Product successfully"
+                data:
+                - id: 1
+                  product_name: "Adidas Response Plus"
+                  price: 2000000
+                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
+                  description: |
+                    Adidas Response Plus bisa jadi pilihan buat kamu yang senang lari sore di taman sekitar rumah. Menggunakan bahan air mesh, sepatu yang dibanderol dengan harga Rp. 1.599.000 ini mengedepankan fitur sirkulasi udara untuk kaki kamu biar terus terasa nyaman dan nggak gampang berkeringat. Selain itu, outsole-nya menggunakan teknologi Stretchweb yang menyesuaikan pergerakan kaki kamu ketika memijak. 
+                  stock: 20
+                  category: "style"
+                  shop_name: "Adidas Shop"
+                  id_user_seller: 1
+                - id: 2
+                  product_name: "EQT Support ADV"
+                  price: 2299000
+                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/toOfkrbLHI.jpg"
+                  description: |
+                    EQT Support ADV juga merupakan keluaran seri Originals atau jenis sneakers dari Adidas. Dengan perpaduan bahan mesh dan kulit sintetis, sepatu ini memberikan aksen kalem dan sporty, serta rasa nyaman bagi pemakainya. Sepatu yang memiliki nilai seharga Rp. 2.299.000 ini hadir dengan desain yang unik, sehingga memberi kesan spesial bagi sang pemakai. 
+                  stock: 20
+                  category: "style"
+                  shop_name: "Adidas Shop"
+                  id_user_seller: 1
+
+              encoding:
+                file:
+                  contentType: image/png, image/jpeg 
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+  /products/{id}:
+    get:
+      summary: "Get data by id product"
+      tags:
+        - "Product"
+      parameters:
+      - name : id
+        in : path
+        description: "Id Product to get data"
+        required: true
+        schema :
+          type: integer
+        examples:
+          1 :
+            description: "Id product 1 "
+            value : 1
+      responses:
+        "200":
+          description: "Success Update Product"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "Product successfully Post"
+                data:
+                  id: 1
+                  product_name: "Adidas Response Plus"
+                  price: 2000000
+                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
+                  description: |
+                    Adidas Response Plus bisa jadi pilihan buat kamu yang senang lari sore di taman sekitar rumah. Menggunakan bahan air mesh, sepatu yang dibanderol dengan harga Rp. 1.599.000 ini mengedepankan fitur sirkulasi udara untuk kaki kamu biar terus terasa nyaman dan nggak gampang berkeringat. Selain itu, outsole-nya menggunakan teknologi Stretchweb yang menyesuaikan pergerakan kaki kamu ketika memijak. 
+                  stock: 20
+                  category: "style"
+                  shop_name: "Adidas Shop"
+                  id_user_seller: 1
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+    put:
+      security:
+        - bearerAuth: []
+      summary: "Update data Product"
+      tags:
+        - "Product"
+      parameters:
+      - name : id
+        in : path
+        description: "Id Product to update data"
+        required: true
+        schema :
+          type: integer
+        examples:
+          1 :
+            description: "Id product 1 "
+            value : 1
+      requestBody:
+        description: "Update data Product"
+        required: true
+        content:
+          "multipart/form-data":
+            schema:
+              $ref: "#/components/schemas/EditProductObject"
+            example:
+              data:
+                product_name: "Adidas Response Plus"
+                price: 2000000
+                description: |
+                  Adidas Response Plus bisa jadi pilihan buat kamu yang senang lari sore di taman sekitar rumah. Menggunakan bahan air mesh, sepatu yang dibanderol dengan harga Rp. 1.599.000 ini mengedepankan fitur sirkulasi udara untuk kaki kamu biar terus terasa nyaman dan nggak gampang berkeringat. Selain itu, outsole-nya menggunakan teknologi Stretchweb yang menyesuaikan pergerakan kaki kamu ketika memijak. 
+                stock: 20
+                category: "style"                
+                file: "9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBhQSERUUExQVFRUWGRwaGBgYGB0dGxkcHxccGxocGxoYHCYgGxojHBsdHy8gJCgpLSwsGB4xNTAqNSYrLCkBCQoKDgwOGg8PGiklHx8pLCwpKSkpKSwpLCkpKSwpLCksKSwsLCkpKSkpLCkpKSwpLCwsKSwsLCksKSkpKSksKf/AABEIAJ0BQQMBIgACEQEDEQH/xAAcAAACAwEBAQEAAAAAAAAAAAAEBQIDBgEABwj/xABFEAACAQIEBAQDBgMGAwcFAAABAhEDIQAEEjEFQVFhBhMicTKBkRRCobHB8CNS0QcVM1Ni4RaS8TRygpOiwtIkQ1RVY//EABoBAAIDA."
+            encoding:
+              file:
+                contentType: image/png, image/jpeg   
+      responses:
+        "200":
+          description: "Success Update Product"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "Product successfully Post"
+                data:
+                  id: 1
+                  product_name: "Adidas Response Plus"
+                  price: 2000000
+                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
+                  description: |
+                    Adidas Response Plus bisa jadi pilihan buat kamu yang senang lari sore di taman sekitar rumah. Menggunakan bahan air mesh, sepatu yang dibanderol dengan harga Rp. 1.599.000 ini mengedepankan fitur sirkulasi udara untuk kaki kamu biar terus terasa nyaman dan nggak gampang berkeringat. Selain itu, outsole-nya menggunakan teknologi Stretchweb yang menyesuaikan pergerakan kaki kamu ketika memijak. 
+                  stock: 20
+                  category: "style"
+                  shop_name: "Adidas Shop"
+                  id_user_seller: 1
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: "ID Product parameter"
+          required: true
+          schema:
+            type: integer
+      summary: "Delete Product data"
+      tags:
+        - "Product"
+      responses:
+        "200":
+          description: "Success Delete Product Data"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "Success Delete Product Data"
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+
+########## CART ########
+  /carts:
+    post:
+      security:
+        - bearerAuth: []
+      summary: "Post data Cart"
+      tags:
+        - "Cart"
+      requestBody:
+        description: "Post data Cart"
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/InsertCartObject"
+            example:
+              qty: 1
+              notes: |
+                Warna Biru
+              id_product: 1
+      responses:
+        "201":
+          description: "Success Post data Cart"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "Post Cart successfully"
+                data:
+                  id: 1
+                  product_name: "Adidas Response Plus"
+                  price: 2000000
+                  qty: 1
+                  sub_total: 2000000
+                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
+                  notes: |
+                    Warna Biru
+                  category: "style"
+                  shop_name: "Adidas Shop"
+                  id_product: 1
+                  id_user_seller: 1
+                  id_user_buyer: 2
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+  /mycarts:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Get all user cart data by user token. Must login."
+      description: "Show all cart items from user that logged in."
+      tags:
+        - "Cart"
+      responses:
+        "200":
+          description: "Success Get user cart data. Show data group by Shop Name/Seller."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccesArrayCartResult"
+              example:
+                message: "Get Cart successfully"
+                data:
+                - id_user_seller: 1
+                  shop_name: "Adidas Shop"
+                  items:
+                  - id: 1
+                    product_name: "Adidas Response Plus"
+                    price: 2000000
+                    qty: 1
+                    sub_total: 2000000
+                    image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
+                    notes: |
+                      Warna Biru
+                    category: "style"
+                    shop_name: "Adidas Shop"
+                    id_product: 1
+                    id_user_seller: 1
+                    id_user_buyer: 2   
+                  - id: 2
+                    product_name: "EQT Support ADV"
+                    price: 2299000
+                    qty: 1
+                    sub_total: 2299000                
+                    image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/toOfkrbLHI.jpg"
+                    notes: ""
+                    stock: 20
+                    category: "style"
+                    shop_name: "Adidas Shop"
+                    id_product: 2
+                    id_user_seller: 1
+                    id_user_buyer: 2          
+                - id_user_seller: 2
+                  shop_name: "Mangga Dua Computer Shop"
+                  items:
+                  - id: 3
+                    product_name: "KLEVV SO-DIMM DDR4 Value Series PC25600 3200MHZ 8GB"
+                    price: 380000
+                    qty: 1
+                    sub_total: 380000
+                    image_url: "https://images.tokopedia.net/img/cache/900/VqbcmM/2022/8/16/ceeb8319-5231-4e5b-bdc9-335330bd0078.jpg"
+                    notes: ""
+                    category: "tech"
+                    shop_name: "Mangga Dua Computer Shop"
+                    id_product: 3
+                    id_user_seller: 3
+                    id_user_buyer: 2   
+                  - id: 4
+                    product_name: "GALAX SONAR-04 Wired Gaming Headset - USB 7.1 Channel RGB"
+                    price: 495000
+                    qty: 1
+                    sub_total: 495000                
+                    image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/toOfkrbLHI.jpghttps://ecs7.tokopedia.net/img/cache/700/VqbcmM/2022/2/14/858492fc-5b10-4eb1-8782-fa28cb61911a.jpg"
+                    notes: ""
+                    stock: 20
+                    category: "tech"
+                    shop_name: "Mangga Dua Computer Shop"
+                    id_product: 4
+                    id_user_seller: 3
+                    id_user_buyer: 2          
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+  /carts/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: "ID_cart parameter"
+          required: true
+          schema:
+            type: integer
+      summary: "Get data Cart"
+      tags:
+        - "Cart"
+      responses:
+        "200":
+          description: "Success Get data Cart"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "Get Cart successfully"
+                data:
+                  id: 1
+                  product_name: "Adidas Response Plus"
+                  price: 2000000
+                  qty: 1
+                  sub_total: 2000000
+                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
+                  notes: |
+                    Warna Biru
+                  category: "style"
+                  shop_name: "Adidas Shop"
+                  id_product: 1
+                  id_user_seller: 1
+                  id_user_buyer: 2
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: "ID cart detail parameter"
+          required: true
+          schema:
+            type: integer
+      summary: "Update data Cart detail"
+      tags:
+        - "Cart"
+      requestBody:
+        description: "Update data Cart"
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/EditCartObject"
+            example:
+              id: 1
+              qty: 1
+              notes: |
+                Warna Biru
+      responses:
+        "200":
+          description: "Success update Cart detail"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"              
+              example:
+                message: "Update Cart detail successfully"
+                data:
+                  id: 1
+                  product_name: "Adidas Response Plus"
+                  price: 2000000
+                  qty: 1
+                  sub_total: 2000000
+                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
+                  notes: |
+                    Warna Biru
+                  category: "style"
+                  shop_name: "Adidas Shop"
+                  id_product: 1
+                  id_user_seller: 1
+                  id_user_buyer: 1
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: "ID cart parameter"
+          required: true
+          schema:
+            type: integer
+      summary: "Delete cart data"
+      tags:
+        - "Cart"
+      responses:
+        "200":
+          description: "Success Delete cart Data"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "Success Delete cart Data"
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+
+  ######### ORDER #########
+
+  /orders/:
+    post:
+      security:
+        - bearerAuth: []
+      summary: "Insert new order"
+      description: "Ketika hit endpoint ini akan menjalankan proses ke midtrans."
+      tags:
+        - "Order"
+      requestBody:
+          description: |
+            Insert data Order. Id user buyer (yang login) tidak perlu disertakan. Akan ambil dari token.\n
+            Response Status ketika Order > \n
+            Order_status : \n
+              null = baru klik checkout; \n
+              process_order = saat klik bayar; \n
+              process_payment = saat proses midtrans; \n
+              complete_payment = status code dr midtrans 200; \n
+              pending_payment = status code midtrans 201; \n
+              failed_payment = status code lain; \n
+              complete_order = klik finish atau confirm dr BE atau confirm user? \n
+            Respons dari midtrans > \n
+              snap_token \n
+          required: true
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/InsertOrdertObject"
+              example:
+                shipping_name: "Luky"
+                shipping_phone: "088280020"
+                shipping_address: "Jakarta"
+                shop_name: "Adidas Shop"
+                gross_ammount: 2000000
+                id_user_seller: 1
+                id_user_buyer: 3
+      responses:
+        "201":
+          description: "Success Post data Order"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "Post data Order successfully"
+                data:
+                  id: 1
+                  shipping_name: "Luky"
+                  shipping_phone: "088280020"
+                  shipping_address: "Jakarta"
+                  shop_name: "Adidas Shop"
+                  gross_ammount: 2000000
+                  order_status: "process_order"
+                  snap_token: "d379aa71-99eb-4dd1-b9bb-eefe813746e9"
+                  redirect_url: "https://app.sandbox.veritrans.co.id/snap/v2/vtweb/d379aa71-99eb-4dd1-b9bb-eefe813746e9"
+                  id_user_buyer: 2
+                  id_user_seller: 3
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+  /myorders:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Get data Order for buyer"
+      description: "Show all transaction that made by buyer user. Get id from extract token. Same id_user_buyer, different id_user_seller."
+      tags:
+        - "Order"
+      responses:
+        "200":
+          description: "Success Get data Order"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccesArrayOrderResult"
+              example:
+                message: "Get data Order successfully"
+                data:
+                  - id: 1
+                    id_user_buyer: 2
+                    id_user_seller: 3
+                    shipping_name: "Luky"
+                    shipping_phone: "088280020"
+                    shipping_address: "Jakarta"
+                    shop_name: "Adidas Shop"
+                    gross_ammount: 4000000
+                    order_status: "process_order"
+                    snap_token: "d379aa71-99eb-4dd1-b9bb-eefe813746e9"
+                    redirect_url: "https://app.sandbox.veritrans.co.id/snap/v2/vtweb/d379aa71-99eb-4dd1-b9bb-eefe813746e9"
+                  - id: 1
+                    id_user_buyer: 2
+                    id_user_seller: 4
+                    shipping_name: "Luky"
+                    shipping_phone: "088280020"
+                    shipping_address: "Jakarta"
+                    shop_name: "Mangga Dua store"
+                    gross_ammount: 9000000
+                    order_status: "complete_order"
+                    snap_token: "d379aa71-99eb-4dd1-b9bb-eefe813746e9"
+                    redirect_url: "https://app.sandbox.veritrans.co.id/snap/v2/vtweb/d379aa71-99eb-4dd1-b9bb-eefe813746e9"
+
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+  /myshoporders:
+    get:
+      security:
+        - bearerAuth: []
+      summary: "Get data Order for seller."
+      description: "Show all transaction from seller shop. Get id user data from token. Same id_user_seller, different id_user_buyer."
+      tags:
+        - "Order"
+      responses:
+        "200":
+          description: "Success Get data shop orders."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccesArrayOrderResult"
+              example:
+                message: "Get data Order successfully"
+                data:
+                  - id: 1
+                    shipping_name: "Luky"
+                    shipping_phone: "088280020"
+                    shipping_address: "Jakarta"
+                    shop_name: "Adidas Shop"
+                    gross_ammount: 4000000
+                    order_status: "process_order"
+                    snap_token: "d379aa71-99eb-4dd1-b9bb-eefe813746e9"
+                    redirect_url: "https://app.sandbox.veritrans.co.id/snap/v2/vtweb/d379aa71-99eb-4dd1-b9bb-eefe813746e9"
+                    id_user_buyer: 2
+                    id_user_seller: 3
+                  - id: 2
+                    shipping_name: "Bambang"
+                    shipping_phone: "088280020"
+                    shipping_address: "Surabaya"
+                    shop_name: "Mangga Dua store"
+                    gross_ammount: 9000000
+                    order_status: "complete_order"
+                    snap_token: "d379aa71-99eb-4dd1-b9bb-eefe813746e9"
+                    redirect_url: "https://app.sandbox.veritrans.co.id/snap/v2/vtweb/d379aa71-99eb-4dd1-b9bb-eefe813746e9"
+                    id_user_buyer: 1
+                    id_user_seller: 3
+
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+  /orders/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      summary: "Get detail data Order by id order"
+      tags:
+        - "Order"
+      responses:
+        "200":
+          description: "Success Get data Order"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+              example:
+                message: "Get data Order successfully"
+                data:
+                  id: 1
+                  id_user_buyer: 2
+                  id_user_seller: 3
+                  shipping_name: "Luky"
+                  shipping_phone: "088280020"
+                  shipping_address: "Jakarta"
+                  shop_name: "Adidas Shop"
+                  gross_ammount: 4000000
+                  order_status: "process_order"
+                  snap_token: "d379aa71-99eb-4dd1-b9bb-eefe813746e9"
+                  redirect_url: "https://app.sandbox.veritrans.co.id/snap/v2/vtweb/d379aa71-99eb-4dd1-b9bb-eefe813746e9"
+                  items:
+                  - id: 1
+                    product_name: "Adidas Response Plus"
+                    price: 2000000
+                    image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
+                    qty: 1
+                    sub_total: 2000000
+                    notes: |
+                      Warna Biru
+                    shop_name: "Adidas Shop"
+                    id_order: 2
+                    id_product: 1
+                    id_user_seller: 1
+                    id_user_buyer: 3
+                  - id: 2
+                    product_name: "EQT Support ADV"
+                    price: 2000000
+                    image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
+                    qty: 1
+                    sub_total: 2000000
+                    notes: |
+                      Dark Blue
+                    shop_name: "Adidas Shop"
+                    id_order: 2
+                    id_product: 2
+                    id_user_seller: 1
+                    id_user_buyer: 3
+        "400" :
+          $ref : "#/components/responses/400"
+        "401" :
+          $ref : "#/components/responses/401"   
+        '500':
+          $ref: "#/components/responses/500"
+components:
+  securitySchemes:
+    "bearerAuth" :
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  
+  schemas:
+    "GetUserObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "username":
+          type: string
+        "email":
+          type: string
+        "name":
+          type: string
+        "phone":
+          type: string
+        "address":
+          type: string    
+        "shop_name":
+          type: string  
+        "image_url":
+          type: string  
+    "ArrayUserObj":
+      type: array
+      items :
+        $ref: "#/components/schemas/GetUserObject"
+    "InsertUserObject":
+      type: object
+      properties:
+        "username":
+          type: string
+        "email":
+          type: string
+        "password":
+          type: string
+        "name":
+          type: string
+        "phone":
+          type: string
+        "address":
+          type: string    
+        "shop_name":
+          type: string    
+        "file":
+          type: string    
+          format: binary   
+    "EditUserObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "username":
+          type: string
+        "email":
+          type: string
+        "password":
+          type: string
+        "name":
+          type: string
+        "phone":
+          type: string
+        "address":
+          type: string    
+        "shop_name":
+          type: string    
+        "file":
+          type: string    
+          format: binary  
+    "InsertProductObject":
+      type: object
+      properties:
+        "product_name":
+          type: string
+        "price":
+          type: integer
+        "description":
+          type: string
+        "image_url":
+          type: string
+        "stock":
+          type: integer
+        "category":
+          type: string
+        "file":
+          type: string    
+          format: binary 
+    "EditProductObject":
+      type: object
+      properties:
+        "id":
+          type: integer      
+        "product_name":
+          type: string
+        "price":
+          type: integer
+        "description":
+          type: string
+        "image_url":
+          type: string
+        "stock":
+          type: integer
+        "category":
+          type: string
+        "file":
+          type: string    
+          format: binary 
+    "ProductObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "product_name":
+          type: string
+        "price":
+          type: integer
+        "description":
+          type: string
+        "image_url":
+          type: string
+        "stock":
+          type: integer
+        "category":
+          type: string
+        "shop_name":
+          type: string
+        "id_user_seller":
+          type: string
+    "ArrProductObject":
+      type: array
+      items:
+        $ref: "#/components/schemas/ProductObject"   
+    "InsertCartObject":
+      type: object
+      properties:
+        "qty":
+          type: integer
+        "notes":
+          type: string
+        "id_product":
+          type: string
+    "EditCartObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "qty":
+          type: integer
+        "notes":
+          type: string
+    "CartObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "product_name":
+          type: string
+        "price":
+          type: integer
+        "qty":
+          type: integer
+        "sub_total":
+          type: integer
+        "image_url":
+          type: string
+        "notes":
+          type: string
+        "category":
+          type: string
+        "shop_name":
+          type: string
+        "id_product":
+          type: string
+        "id_user_seller":
+          type: string
+        "id_user_buyer":
+          type: string
+    "ArrCarttObject":
+      type: array
+      items:
+        $ref: "#/components/schemas/CartObject"  
+    "InsertOrdertObject":
+      type: object
+      properties:
+        "shipping_name":
+          type: string
+        "shipping_phone":
+          type: string
+        "shipping_address":
+          type: string
+        "shop_name":
+          type: string
+        "gross_ammount":
+          type: integer  
+        "order_status":
+          type: string
+        "id_user_buyer":
+          type: integer
+        "id_user_seller":
+          type: integer
+    "OrdertObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "shipping_name":
+          type: string
+        "shipping_phone":
+          type: string
+        "shipping_address":
+          type: string
+        "shop_name":
+          type: string
+        "gross_ammount":
+          type: integer  
+        "order_status":
+          type: string
+        "snap_token":
+          type: string
+        "redirect_url":
+          type: string
+        "id_user_buyer":
+          type: integer
+        "id_user_seller":
+          type: integer
+    "SuccesArrayOrderResult":
+      type: array
+      items:
+        $ref: "#/components/schemas/OrdertObject"  
+    "InsertItemOrderObject":
+      type: object
+      properties:
+        "product_name":
+          type: string
+        "price":
+          type: integer
+        "image_url":
+          type: string
+        "qty":
+          type: integer
+        "sub_total":
+          type: integer
+        "notes":
+          type: string
+        "shop_name":
+          type: string
+        "id_order":
+          type: integer
+        "id_product":
+          type: integer
+        "id_user_seller":
+          type: string
+        "id_user_buyer":
+          type: string
+    "ItemOrderObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "product_name":
+          type: string
+        "price":
+          type: integer
+        "image_url":
+          type: string
+        "qty":
+          type: integer
+        "sub_total":
+          type: integer
+        "notes":
+          type: string
+        "shop_name":
+          type: string
+        "id_order":
+          type: integer
+        "id_product":
+          type: integer
+        "id_user_seller":
+          type: string
+        "id_user_buyer":
+          type: string
+    "ArrItemOrderObject":
+      type: array
+      items:
+        $ref: "#/components/schemas/ItemOrderObject"  
+    "SuccessResult":
+      type: object
+      properties:
+        message: 
+          type: string
+        data:
+          type: object
+    "SuccesLoginResult":
+      type: object
+      properties:
+        message: 
+          type: string
+        data:
+          type: object
+        token: 
+          type: string
+    "SuccesArrayProductResult":
+      type: object
+      properties:
+        message: 
+          type: string
+        data:
+          type: array
+          items : 
+            $ref: "#/components/schemas/ArrProductObject"
+    "SuccesArrayCartResult":
+      type: object
+      properties:
+        message: 
+          type: string
+        data:
+          type: array
+          items : 
+            $ref: "#/components/schemas/ArrCarttObject" 
+    "SuccesArrayItemOrderResult":
+      type: object
+      properties:
+        message: 
+          type: string
+        data:
+          type: array
+          items : 
+            $ref: "#/components/schemas/ArrItemOrderObject" 
+  responses:
+    '200':
+      description: "Success Process Data"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+              data:
+                type: object
+    '201':
+      description: "Success Create Data"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+              data:
+                type: object
+    '400':
+      description: "Wrong Request From User"
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: "Process Failed. Please check your input."
+    '401':
+      description: "Authorization information is missing or invalid."
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: "Process Failed. User not authorized for this request."
+    '500':
+      description: "Error process on server"
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: "Process Failed. Please check server."
+    '400_midtrans':
+      description: "Wrong Request From User"
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: "Process Failed. Please check your input."
+    '401_midtrans':
+      description: "Authorization information is missing or invalid."
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              error_message:
+                type: object
+          example:
+            error_message:
+            - "Access denied due to unauthorized transaction, please check client or server key"
+            - "Visit https://snap-docs.midtrans.com/#request-headers for more details"
+    '500_midtrans':
+      description: "Error from server"
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: "Process Failed. Please check server."
