@@ -15,7 +15,7 @@ servers:
   - description: Base URL Server GCP
     url: http://54.179.170.113:8000
   - description: SwaggerHub API Auto Mocking
-    url: //https://virtserver.swaggerhub.com/alta_dashhboard/alta_dashbaordt3/1.0.0
+    url: https://virtserver.swaggerhub.com/YUSNARSETIYADI150403/OPEN-API-DASHBOARD/1.0.0
   - description: BE servers
     url: https://{environment}.api.alta.id
     variables:
@@ -27,14 +27,17 @@ servers:
 tags:
   - name: Dashboard 
     description: API menampilkan inforamsi dashboard
-  - name: User #login, register, lihat profile user, update profile user, delelte profile (non aktif dgn delete gorm)
+  - name: Auth
+    description:  API mengelola fitur Auth
+  - name: Users #login, register, lihat profile user, update profile user, delelte profile (non aktif dgn delete gorm)
     description: API mengelola fitur User  
-  - name: Class
+  - name: Classes
     description:  API mengelola fitur Class  
-  - name: Mentee
+  - name: Mentees
     description:  API mengelola fitur Mentee
-  - name: Log
+  - name: Logs
     description:  API mengelola fitur Log / Feedback mentee
+
 
 paths:
 
@@ -95,7 +98,7 @@ paths:
         content:
           application/json:
             schema:
-                $ref: "#/components/schemas/InsertUserObject"
+              $ref: "#/components/schemas/InsertUserObject"
             example:
               full_name: "Budiman"
               email: "budi123@gmail.com"
@@ -156,7 +159,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccesArrayUserResult"
-                example:
+              example:
                   status: "Success"
                   message: "Success get all users"
                   data:
@@ -205,7 +208,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithData"
-                example:
+              example:
                   status: "Success"
                   message: "Success get users by id"
                   data:
@@ -258,7 +261,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithoutData" 
-                example:
+              example:
                   status: "Success"
                   message: "Success update users"
         "400" :
@@ -293,9 +296,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithoutData" 
-                example:
-                  status: "Success"
-                  message: "Success delete users"
+              example:
+                status: "Success"
+                message: "Success delete users"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -319,7 +322,7 @@ paths:
         content:
           application/json:
             schema:
-                $ref: "#/components/schemas/InsertClassObject"
+              $ref: "#/components/schemas/InsertClassObject"
             example:
               name: "Budiman"
               class_code: "budi123@gmail.com"
@@ -369,27 +372,21 @@ paths:
             example: "Backend Engineer 3"
       responses:
         '200':
-          description: A list of users
+          description: A list of classes
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccesArrayUserResult"
-                example:
+                $ref: "#/components/schemas/SuccesArrayClassResult"
+              example:
                   status: "Success"
-                  message: "Success get all users"
+                  message: "Success get all classes"
                   data:
                     - id: 1
-                      full_name: "Budiman"
-                      email: "budi123@gmail.com"
-                      team: "Academic"
-                      role: "User"
-                      status: "Active" 
+                      name: "Budiman"
+                      class_code: "BE13"
                     - id: 2
-                      full_name: "Jasiman"
-                      email: "Jasiman123@gmail.com"
-                      team: "Academic"
-                      role: "User"
-                      status: "Active" 
+                      name: "Jasiman"
+                      class_code: "FE10"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -402,9 +399,9 @@ paths:
   /classes/{id}:
     get:
       tags:
-        - Users
-      summary: "Get data user by id user"
-      description: "Get data user using id user at path parameter. Only return 1 data."
+        - Classes
+      summary: "Get data class by id class"
+      description: "Get data class using id class at path parameter. Only return 1 data."
       security:
         - JWTAuth: []
       parameters:
@@ -418,21 +415,18 @@ paths:
             example: 1
       responses:
         '200':
-          description: "Success get user by id"
+          description: "Success get class by id"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithData"
-                example:
+              example:
                   status: "Success"
-                  message: "Success get users by id"
+                  message: "Success get classes by id"
                   data:
                     id: 1
-                    full_name: "Jasiman"
-                    email: "Jasiman123@gmail.com"
-                    team: "Academic"
-                    role: "User"
-                    status: "Active" 
+                    name: "Jasiman"
+                    class_code: "BE13"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -443,9 +437,9 @@ paths:
           $ref: "#/components/responses/500"
     put:
       tags:
-        - Users
-      summary: "Update data User"
-      description: "Update data user using request body and using id for reference at path parameter."
+        - Classes
+      summary: "Update data Class"
+      description: "Update data class using request body and using id for reference at path parameter."
       security:
         - JWTAuth: []
       parameters:
@@ -462,13 +456,10 @@ paths:
         content:
           application/json:
             schema:
-                $ref: "#/components/schemas/EditUserObject"
+                $ref: "#/components/schemas/EditClassObject"
             example:
-              full_name: "Budiman"
-              email: "budi123@gmail.com"
-              password: "123"
-              team: "Academic"
-              status: "Active" 
+              name: "Budiman"
+              class_code: "BE13"
       responses:
         '200':
           description: "Success update data"
@@ -476,9 +467,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithoutData" 
-                example:
+              example:
                   status: "Success"
-                  message: "Success update users"
+                  message: "Success update classes"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -490,9 +481,9 @@ paths:
 
     delete:
       tags:
-        - Users
-      summary: "Delete user"
-      description: "Delete user using id at path parameter as reference."
+        - Classes
+      summary: "Delete class"
+      description: "Delete class using id at path parameter as reference."
       security:
         - JWTAuth: []
       parameters:
@@ -506,14 +497,14 @@ paths:
             example: 1
       responses:
         '200':
-          description: "Success Delete User."
+          description: "Success Delete Class."
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithoutData" 
-                example:
+              example:
                   status: "Success"
-                  message: "Success delete users"
+                  message: "Success delete classes"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -523,6 +514,283 @@ paths:
         '500':
           $ref: "#/components/responses/500"
 
+### Endpoint Mentees
+  /mentees:
+    post:
+      tags:
+        - Mentees
+      summary: "Insert Data Mentees" 
+      description: "Add mentee."
+      security:
+        - JWTAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InsertMenteeObject"
+            example:
+              name: "Budiman"
+              status: "unit 1"
+              gender: "laki"
+              nickname: "budi"
+              address: "tng"
+              home_address: "papua"
+              email: "budi@mail.com"
+              telegram: "budidoremi"
+              discord: "budidiscord"
+              phone: "08123"
+              emegency_name: "yanto"
+              emergency_phone: "08456"
+              emergency_status: "orang tua"
+              education_type: "IT"
+              education_major: "sarjana"
+              education_graduate: "2021"
+              id_class: "1"
+      responses:
+        '201':
+          description: "Success create data"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithData"
+              example:
+                status: "Success"
+                message: "Success add data."
+                data:
+                  id: 1
+                  name: "Budiman"
+                  status: "unit 1"
+                  gender: "laki"
+                  nickname: "budi"
+                  address: "tng"
+                  home_address: "papua"
+                  email: "budi@mail.com"
+                  telegram: "budidoremi"
+                  discord: "budidiscord"
+                  phone: "08123"
+                  emegency_name: "yanto"
+                  emergency_phone: "08456"
+                  emergency_status: "orang tua"
+                  education_type: "IT"
+                  education_major: "sarjana"
+                  education_graduate: "2021"
+                  id_class: "1"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    get:
+      tags:
+        - Mentees
+      summary: "Get All Mentees And Search"
+      description: "Get all mentee and can use query parameter to search. Input using lowercase"
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: ""
+          description: "No value in parameter."
+          required: false
+          in: query
+          schema:
+            type: string
+            example: ""
+        - name: name
+          description: "Class Name"
+          required: false
+          in: query
+          schema:
+            type: string
+            example: "Backend Engineer 3"
+      responses:
+        '200':
+          description: A list of mentees
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccesArrayMenteeResult"
+              example:
+                  status: "Success"
+                  message: "Success get all mentees"
+                  data:
+                    - id: 1
+                      name: "Budiman"
+                      status: "unit 1"
+                      gender: "laki"
+                      nickname: "budi"
+                      address: "tng"
+                      home_address: "papua"
+                      email: "budi@mail.com"
+                      telegram: "budidoremi"
+                      discord: "budidiscord"
+                      phone: "08123"
+                      emegency_name: "yanto"
+                      emergency_phone: "08456"
+                      emergency_status: "orang tua"
+                      education_type: "IT"
+                      education_major: "sarjana"
+                      education_graduate: "2021"
+                    - id: 2
+                      name: "jasimin"
+                      status: "unit 1"
+                      gender: "wanita"
+                      nickname: "mimin"
+                      address: "tng"
+                      home_address: "papua"
+                      email: "min@mail.com"
+                      telegram: "mimin"
+                      discord: "mimindiscord"
+                      phone: "08123"
+                      emegency_name: "yanto"
+                      emergency_phone: "08456"
+                      emergency_status: "orang tua"
+                      education_type: "IT"
+                      education_major: "sarjana"
+                      education_graduate: "2021"
+                      
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+  /mentees/{id}:
+    get:
+      tags:
+        - Mentees
+      summary: "Get data mentee by id mentee"
+      description: "Get data mentee using id mentee at path parameter. Only return 1 data."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id user to get data"
+          required: true
+          in: path
+          schema:
+            description: "Id user 1"
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: "Success get mentee by id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithData"
+              example:
+                  status: "Success"
+                  message: "Success get mentee by id"
+                  data:
+                      id: 1
+                      name: "Budiman"
+                      status: "unit 1"
+                      gender: "laki"
+                      nickname: "budi"
+                      address: "tng"
+                      home_address: "papua"
+                      email: "budi@mail.com"
+                      telegram: "budidoremi"
+                      discord: "budidiscord"
+                      phone: "08123"
+                      emegency_name: "yanto"
+                      emergency_phone: "08456"
+                      emergency_status: "orang tua"
+                      education_type: "IT"
+                      education_major: "sarjana"
+                      education_graduate: "2021"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    put:
+      tags:
+        - Mentees
+      summary: "Update data Mentee"
+      description: "Update data mentee using request body and using id for reference at path parameter."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id user to update data"
+          required: true
+          in: path
+          schema:
+            description: "Id user 1"
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/EditMenteeObject"
+            example:
+              name: "Budiman"
+              class_code: "BE13"
+      responses:
+        '200':
+          description: "Success update data"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithoutData" 
+              example:
+                  status: "Success"
+                  message: "Success update classes"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+    delete:
+      tags:
+        - Classes
+      summary: "Delete class"
+      description: "Delete class using id at path parameter as reference."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id user to delete data."
+          required: true
+          in: path
+          schema:
+            description: "Id user 1."
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: "Success Delete Class."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithoutData" 
+              example:
+                  status: "Success"
+                  message: "Success delete classes"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
 
 ####################################
 #  COMPONENTS
