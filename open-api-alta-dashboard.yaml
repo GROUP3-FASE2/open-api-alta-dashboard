@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
   description: |
-    Dokumen open-api aplikasi Alta Dashboard
+    Dokumen Open API Aplikasi Alta Immersive Dashboard
   version: "1.0.0"
-  title: Alta Dashboard
+  title: Immersive Dashboard App Project
   termsOfService: 'http://swagger.io/terms/'
   contact:
     email: apiteam@swagger.io
@@ -85,6 +85,35 @@ paths:
           $ref : "#/components/responses/404"  
         '500':
           $ref: "#/components/responses/500"
+
+### Endpoint Dashboard
+  /dashboard:
+    get:
+      summary: "Dashboard App Immersive Alta"
+      tags:
+      - "Dashboard"
+      responses:
+        "200":
+          description: "Immersive Dashboard"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithData"
+              example:
+                status: "Success"
+                message: "Dashboard App Immersive Alta"
+                data:
+                 user: "Hello, Budiman"
+                 Mentee_Active: 20
+                 Mentee_Placement: 10
+                 Mentee_Feedback: 50
+        "400" :
+          $ref : "#/components/responses/400"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    
 
 ### Endpoint Users
   /users:
@@ -324,8 +353,8 @@ paths:
             schema:
               $ref: "#/components/schemas/InsertClassObject"
             example:
-              name: "Budiman"
-              class_code: "budi123@gmail.com"
+              name: "BE"
+              class_code: "B13"
       responses:
         '201':
           description: "Success create data"
@@ -338,8 +367,8 @@ paths:
                 message: "Success add data."
                 data:
                   id: 1
-                  name: "Budiman"
-                  class_code: "budi123@gmail.com"
+                  name: "BE"
+                  class_code: "B13"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -369,7 +398,7 @@ paths:
           in: query
           schema:
             type: string
-            example: "Backend Engineer 3"
+            example: "BE"
       responses:
         '200':
           description: A list of classes
@@ -382,11 +411,11 @@ paths:
                   message: "Success get all classes"
                   data:
                     - id: 1
-                      name: "Budiman"
-                      class_code: "BE13"
+                      name: "BE"
+                      class_code: "B13"
                     - id: 2
-                      name: "Jasiman"
-                      class_code: "FE10"
+                      name: "FE"
+                      class_code: "B10"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -406,11 +435,11 @@ paths:
         - JWTAuth: []
       parameters:
         - name: id
-          description: "Id user to get data"
+          description: "Id class to get data"
           required: true
           in: path
           schema:
-            description: "Id user 1"
+            description: "Id class 1"
             type: integer
             example: 1
       responses:
@@ -425,8 +454,8 @@ paths:
                   message: "Success get classes by id"
                   data:
                     id: 1
-                    name: "Jasiman"
-                    class_code: "BE13"
+                    name: "BE"
+                    class_code: "B13"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -444,11 +473,11 @@ paths:
         - JWTAuth: []
       parameters:
         - name: id
-          description: "Id user to update data"
+          description: "Id class to update data"
           required: true
           in: path
           schema:
-            description: "Id user 1"
+            description: "Id class 1"
             type: integer
             example: 1
       requestBody:
@@ -458,8 +487,8 @@ paths:
             schema:
                 $ref: "#/components/schemas/EditClassObject"
             example:
-              name: "Budiman"
-              class_code: "BE13"
+              name: "BE"
+              class_code: "B13"
       responses:
         '200':
           description: "Success update data"
@@ -488,11 +517,11 @@ paths:
         - JWTAuth: []
       parameters:
         - name: id
-          description: "Id user to delete data."
+          description: "Id class to delete data."
           required: true
           in: path
           schema:
-            description: "Id user 1."
+            description: "Id class 1."
             type: integer
             example: 1
       responses:
@@ -600,12 +629,12 @@ paths:
             type: string
             example: ""
         - name: name
-          description: "Class Name"
+          description: "Mentee Name"
           required: false
           in: query
           schema:
             type: string
-            example: "Backend Engineer 3"
+            example: "budiman"
       responses:
         '200':
           description: A list of mentees
@@ -634,6 +663,7 @@ paths:
                       education_type: "IT"
                       education_major: "sarjana"
                       education_graduate: "2021"
+                      id_class: "1"
                     - id: 2
                       name: "jasimin"
                       status: "unit 1"
@@ -651,6 +681,7 @@ paths:
                       education_type: "IT"
                       education_major: "sarjana"
                       education_graduate: "2021"
+                      id_class: "2"
                       
         "400" :
           $ref : "#/components/responses/400"  
@@ -670,11 +701,11 @@ paths:
         - JWTAuth: []
       parameters:
         - name: id
-          description: "Id user to get data"
+          description: "Id mentee to get data"
           required: true
           in: path
           schema:
-            description: "Id user 1"
+            description: "Id mentee 1"
             type: integer
             example: 1
       responses:
@@ -705,6 +736,7 @@ paths:
                       education_type: "IT"
                       education_major: "sarjana"
                       education_graduate: "2021"
+                      id_class: "1"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -722,11 +754,11 @@ paths:
         - JWTAuth: []
       parameters:
         - name: id
-          description: "Id user to update data"
+          description: "Id mentee to update data"
           required: true
           in: path
           schema:
-            description: "Id user 1"
+            description: "Id mentee 1"
             type: integer
             example: 1
       requestBody:
@@ -736,8 +768,23 @@ paths:
             schema:
                 $ref: "#/components/schemas/EditMenteeObject"
             example:
-              name: "Budiman"
-              class_code: "BE13"
+                      name: "Budiman"
+                      status: "unit 1"
+                      gender: "laki"
+                      nickname: "budi"
+                      address: "tng"
+                      home_address: "papua"
+                      email: "budi@mail.com"
+                      telegram: "budidoremi"
+                      discord: "budidiscord"
+                      phone: "08123"
+                      emegency_name: "yanto"
+                      emergency_phone: "08456"
+                      emergency_status: "orang tua"
+                      education_type: "IT"
+                      education_major: "sarjana"
+                      education_graduate: "2021"
+                      id_class: "1"
       responses:
         '200':
           description: "Success update data"
@@ -747,7 +794,7 @@ paths:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success update classes"
+                  message: "Success update mentees"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -759,30 +806,255 @@ paths:
 
     delete:
       tags:
-        - Classes
-      summary: "Delete class"
-      description: "Delete class using id at path parameter as reference."
+        - Mentees
+      summary: "Delete mentee"
+      description: "Delete mentee using id at path parameter as reference."
       security:
         - JWTAuth: []
       parameters:
         - name: id
-          description: "Id user to delete data."
+          description: "Id mentee to delete data."
           required: true
           in: path
           schema:
-            description: "Id user 1."
+            description: "Id mentee 1."
             type: integer
             example: 1
       responses:
         '200':
-          description: "Success Delete Class."
+          description: "Success Delete Mentee."
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success delete classes"
+                  message: "Success delete mentees"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+### Endpoint Logs
+  /logs:
+    post:
+      tags:
+        - Logs
+      summary: "Insert Data Logs/Feedback" 
+      description: "Add Logs/Feedback."
+      security:
+        - JWTAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InsertLogObject"
+            example:
+              title: "Interview"
+              feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+              status: "Join class"
+              id_mentee: "1"
+              id_user: "1"
+      responses:
+        '201':
+          description: "Success create data"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithData"
+              example:
+                status: "Success"
+                message: "Success add data."
+                data:
+                  id: 1
+                  title: "Interview"
+                  feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+                  status: "Join class"
+                  id_mentee: "1"
+                  id_user: "1"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    get:
+      tags:
+        - Logs
+      summary: "Get All Logs And Search"
+      description: "Get all log and can use query parameter to search. Input using lowercase"
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: ""
+          description: "No value in parameter."
+          required: false
+          in: query
+          schema:
+            type: string
+            example: ""
+        - name: name
+          description: "title log"
+          required: false
+          in: query
+          schema:
+            type: string
+            example: "interview"
+      responses:
+        '200':
+          description: A list of logs/feedback
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccesArrayLogResult"
+              example:
+                  status: "Success"
+                  message: "Success get all logs"
+                  data:
+                    - id: 1
+                      title: "Interview"
+                      feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+                      status: "Join class"
+                      id_mentee: "1"
+                      id_user: "1"
+                    - id: 2
+                      title: "End of section"
+                      feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+                      status: "continue section 2"
+                      id_mentee: "2"
+                      id_user: "2"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+  /logs/{id}:
+    get:
+      tags:
+        - Logs
+      summary: "Get data log by id log"
+      description: "Get data log using id log at path parameter. Only return 1 data."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id log to get data"
+          required: true
+          in: path
+          schema:
+            description: "Id log 1"
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: "Success get log by id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithData"
+              example:
+                  status: "Success"
+                  message: "Success get logs by id"
+                  data:
+                      id: 1
+                      title: "Interview"
+                      feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+                      status: "Join class"
+                      id_mentee: "1"
+                      id_user: "1"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    put:
+      tags:
+        - Logs
+      summary: "Update data Log"
+      description: "Update data Log using request body and using id for reference at path parameter."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id log to update data"
+          required: true
+          in: path
+          schema:
+            description: "Id log 1"
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/EditLogObject"
+            example:
+              id: 1
+              title: "Interview"
+              feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+              status: "Join class"
+              id_mentee: "1"
+              id_user: "1"
+      responses:
+        '200':
+          description: "Success update data"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithoutData" 
+              example:
+                  status: "Success"
+                  message: "Success update LogS"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+    delete:
+      tags:
+        - Logs
+      summary: "Delete Log"
+      description: "Delete log using id at path parameter as reference."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id log to delete data."
+          required: true
+          in: path
+          schema:
+            description: "Id log 1."
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: "Success Delete Log."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithoutData" 
+              example:
+                  status: "Success"
+                  message: "Success delete logs"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
