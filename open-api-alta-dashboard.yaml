@@ -37,6 +37,8 @@ tags:
     description:  API mengelola fitur Mentee
   - name: Logs
     description:  API mengelola fitur Log / Feedback mentee
+  - name: Data
+    description:  API mengelola data statik yang dibutuhkan aplikasi
 
 
 paths:
@@ -140,17 +142,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseWithData"
+                $ref: "#/components/schemas/ResponseWithoutData"
               example:
                 status: "Success"
-                message: "User successfully created"
-                data:
-                  id: 1
-                  full_name: "Budiman"
-                  email: "budi123@gmail.com"
-                  team: "Academic"
-                  role: "User"
-                  status: "Active"  
+                message: "User successfully created" 
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -292,7 +287,7 @@ paths:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success update users"
+                  message: "Success update user."
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -327,7 +322,7 @@ paths:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                 status: "Success"
-                message: "Success delete users"
+                message: "Success delete user"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -408,7 +403,7 @@ paths:
                 $ref: "#/components/schemas/SuccesArrayClassResult"
               example:
                   status: "Success"
-                  message: "Success get all classes"
+                  message: "Success get all class"
                   data:
                     - id: 1
                       name: "BE"
@@ -498,7 +493,7 @@ paths:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success update classes"
+                  message: "Success update class"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -533,7 +528,7 @@ paths:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success delete classes"
+                  message: "Success delete class"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -560,51 +555,32 @@ paths:
               $ref: "#/components/schemas/InsertMenteeObject"
             example:
               name: "Budiman"
-              status: "unit 1"
-              gender: "laki"
-              nickname: "budi"
-              address: "tng"
-              home_address: "papua"
+              status: "Active"
+              gender: "Male"
+              nickname: "Budi"
+              address: "Jl. Srengseng Sawah No.17, RW.12, Srengseng Sawah, Kec. Jagakarsa, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12630"
+              home_address: "Jl. Srengseng Sawah No.17, RW.12, Srengseng Sawah, Kec. Jagakarsa, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12630"
               email: "budi@mail.com"
               telegram: "budidoremi"
               discord: "budidiscord"
-              phone: "08123"
-              emegency_name: "yanto"
-              emergency_phone: "08456"
-              emergency_status: "orang tua"
-              education_type: "IT"
-              education_major: "sarjana"
+              phone: "08123989907"
+              emegency_name: "YantoFebrian"
+              emergency_phone: "08456938383"
+              emergency_status: "Orang Tua"
+              education_type: "Informatic"
+              education_major: "Sarjana"
               education_graduate: "2021"
-              id_class: "1"
+              id_class: 1
       responses:
         '201':
           description: "Success create data"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseWithData"
+                $ref: "#/components/schemas/ResponseWithoutData"
               example:
                 status: "Success"
                 message: "Success add data."
-                data:
-                  id: 1
-                  name: "Budiman"
-                  status: "unit 1"
-                  gender: "laki"
-                  nickname: "budi"
-                  address: "tng"
-                  home_address: "papua"
-                  email: "budi@mail.com"
-                  telegram: "budidoremi"
-                  discord: "budidiscord"
-                  phone: "08123"
-                  emegency_name: "yanto"
-                  emergency_phone: "08456"
-                  emergency_status: "orang tua"
-                  education_type: "IT"
-                  education_major: "sarjana"
-                  education_graduate: "2021"
-                  id_class: "1"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -616,8 +592,8 @@ paths:
     get:
       tags:
         - Mentees
-      summary: "Get All Mentees And Search"
-      description: "Get all mentee and can use query parameter to search. Input using lowercase"
+      summary: "Get All Mentees with Search By Name and Filter Result."
+      description: "Get all mentee, query parameter to search by name and filter by status, category and class. Input using lowercase"
       security:
         - JWTAuth: []
       parameters:
@@ -635,53 +611,70 @@ paths:
           schema:
             type: string
             example: "budiman"
+        - name: id_class
+          in: query
+          description: "Filter result by class."
+          required: false 
+          schema:
+            type: integer
+          examples:
+            1:
+              description: "Id Class = 1. Show mentees where class id = 1."
+              value: 1
+            2:
+              description: "Id Class = 2. Show mentees where class id = 2."
+              value: 2
+        - name: status
+          in: query
+          description: "Filter result by mentee status."
+          required: false 
+          schema:
+            type: string
+          examples:
+            "Placement":
+              description: "Status = Placement. Show mentees where status mentee = placement."
+              value: "Placement"
+            "Eleminate":
+              description: "Status = Elemintate. Show mentees where status mentee = eleminate."
+              value: "Eleminate"
+        - name: category
+          in: query
+          description: "Filter result by education category."
+          required: false 
+          schema:
+            type: string
+          examples:
+            "Informatic":
+              description: "Category = Informatic. Show mentees where status mentee from informatic major."
+              value: "Informatic"
+            "Non-Informatic":
+              description: "Category = Non-Informatic. Show mentees where status mentee from non-informatic major."
+              value: "Non-Informatic"
       responses:
         '200':
           description: A list of mentees
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccesArrayMenteeResult"
+                $ref: "#/components/schemas/SuccesArrayMenteeListResult"
               example:
                   status: "Success"
                   message: "Success get all mentees"
                   data:
                     - id: 1
                       name: "Budiman"
-                      status: "unit 1"
-                      gender: "laki"
-                      nickname: "budi"
-                      address: "tng"
-                      home_address: "papua"
-                      email: "budi@mail.com"
-                      telegram: "budidoremi"
-                      discord: "budidiscord"
-                      phone: "08123"
-                      emegency_name: "yanto"
-                      emergency_phone: "08456"
-                      emergency_status: "orang tua"
-                      education_type: "IT"
-                      education_major: "sarjana"
-                      education_graduate: "2021"
-                      id_class: "1"
+                      class_code: "BE 7"
+                      status: "Active"
+                      education_type: "Informatic"
+                      gender: "Male"
+                      id_class: 1
                     - id: 2
-                      name: "jasimin"
-                      status: "unit 1"
-                      gender: "wanita"
-                      nickname: "mimin"
-                      address: "tng"
-                      home_address: "papua"
-                      email: "min@mail.com"
-                      telegram: "mimin"
-                      discord: "mimindiscord"
-                      phone: "08123"
-                      emegency_name: "yanto"
-                      emergency_phone: "08456"
-                      emergency_status: "orang tua"
-                      education_type: "IT"
-                      education_major: "sarjana"
-                      education_graduate: "2021"
-                      id_class: "2"
+                      name: "Jasiman"
+                      class_code: "QE 8"
+                      status: "Active"
+                      education_type: "Non-Informatic"
+                      gender: "Male"
+                      id_class: 2
                       
         "400" :
           $ref : "#/components/responses/400"  
@@ -714,29 +707,46 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseWithData"
+                $ref: "#/components/schemas/SuccessMenteeResult"
               example:
-                  status: "Success"
-                  message: "Success get mentee by id"
-                  data:
-                      id: 1
-                      name: "Budiman"
-                      status: "unit 1"
-                      gender: "laki"
-                      nickname: "budi"
-                      address: "tng"
-                      home_address: "papua"
-                      email: "budi@mail.com"
-                      telegram: "budidoremi"
-                      discord: "budidiscord"
-                      phone: "08123"
-                      emegency_name: "yanto"
-                      emergency_phone: "08456"
-                      emergency_status: "orang tua"
-                      education_type: "IT"
-                      education_major: "sarjana"
-                      education_graduate: "2021"
-                      id_class: "1"
+                status: "Success"
+                message: "Success get mentee by id"
+                data:
+                  id: 1
+                  name: "Budiman"
+                  status: "Active"
+                  gender: "Male"
+                  nickname: "Budi"
+                  address: "Jl. Srengseng Sawah No.17, RW.12, Srengseng Sawah, Kec. Jagakarsa, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12630"
+                  home_address: "Jl. Srengseng Sawah No.17, RW.12, Srengseng Sawah, Kec. Jagakarsa, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12630"
+                  email: "budi@mail.com"
+                  telegram: "budidoremi"
+                  discord: "budidiscord"
+                  phone: "08123989907"
+                  emegency_name: "YantoFebrian"
+                  emergency_phone: "08456938383"
+                  emergency_status: "Orang Tua"
+                  education_type: "Informatic"
+                  education_major: "Sarjana"
+                  education_graduate: "2021"
+                  id_class: 1
+                  logs:
+                  - id: 1
+                    title: "Interview"
+                    fullname_user: "Ismail"
+                    create_date: "03 November 2022"
+                    feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+                    status: "None"
+                    id_mentee: 1
+                    id_user: 1
+                  - id: 2
+                    title: "Acceptance"
+                    fullname_user: "Yovan"
+                    create_date: "03 December 2022"
+                    feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+                    status: "Join class"
+                    id_mentee: 1
+                    id_user: 3
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -766,25 +776,25 @@ paths:
         content:
           application/json:
             schema:
-                $ref: "#/components/schemas/EditMenteeObject"
+              $ref: "#/components/schemas/EditMenteeObject"
             example:
-                      name: "Budiman"
-                      status: "unit 1"
-                      gender: "laki"
-                      nickname: "budi"
-                      address: "tng"
-                      home_address: "papua"
-                      email: "budi@mail.com"
-                      telegram: "budidoremi"
-                      discord: "budidiscord"
-                      phone: "08123"
-                      emegency_name: "yanto"
-                      emergency_phone: "08456"
-                      emergency_status: "orang tua"
-                      education_type: "IT"
-                      education_major: "sarjana"
-                      education_graduate: "2021"
-                      id_class: "1"
+              name: "Budiman"
+              status: "Active"
+              gender: "Male"
+              nickname: "Budi"
+              address: "Jl. Srengseng Sawah No.17, RW.12, Srengseng Sawah, Kec. Jagakarsa, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12630"
+              home_address: "Jl. Srengseng Sawah No.17, RW.12, Srengseng Sawah, Kec. Jagakarsa, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12630"
+              email: "budi@mail.com"
+              telegram: "budidoremi"
+              discord: "budidiscord"
+              phone: "08123989907"
+              emegency_name: "YantoFebrian"
+              emergency_phone: "08456938383"
+              emergency_status: "Orang Tua"
+              education_type: "Informatic"
+              education_major: "Sarjana"
+              education_graduate: "2021"
+              id_class: 1
       responses:
         '200':
           description: "Success update data"
@@ -794,7 +804,7 @@ paths:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success update mentees"
+                  message: "Success update mentee"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -829,7 +839,7 @@ paths:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success delete mentees"
+                  message: "Success delete mentee"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -858,25 +868,18 @@ paths:
               title: "Interview"
               feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
               status: "Join class"
-              id_mentee: "1"
-              id_user: "1"
+              id_mentee: 1
+              id_user: 1
       responses:
         '201':
           description: "Success create data"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseWithData"
+                $ref: "#/components/schemas/ResponseWithoutData"
               example:
                 status: "Success"
                 message: "Success add data."
-                data:
-                  id: 1
-                  title: "Interview"
-                  feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
-                  status: "Join class"
-                  id_mentee: "1"
-                  id_user: "1"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -901,7 +904,7 @@ paths:
             type: string
             example: ""
         - name: name
-          description: "title log"
+          description: "Title log"
           required: false
           in: query
           schema:
@@ -918,18 +921,22 @@ paths:
                   status: "Success"
                   message: "Success get all logs"
                   data:
-                    - id: 1
-                      title: "Interview"
-                      feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
-                      status: "Join class"
-                      id_mentee: "1"
-                      id_user: "1"
-                    - id: 2
-                      title: "End of section"
-                      feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
-                      status: "continue section 2"
-                      id_mentee: "2"
-                      id_user: "2"
+                  - id: 1
+                    title: "Interview"
+                    fullname_user: "Ismail"
+                    create_date: "03 November 2022"
+                    feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+                    status: "None"
+                    id_mentee: 1
+                    id_user: 1
+                  - id: 2
+                    title: "Acceptance"
+                    fullname_user: "Yovan"
+                    create_date: "03 December 2022"
+                    feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+                    status: "Join class"
+                    id_mentee: 1
+                    id_user: 3
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -967,12 +974,14 @@ paths:
                   status: "Success"
                   message: "Success get logs by id"
                   data:
-                      id: 1
-                      title: "Interview"
-                      feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
-                      status: "Join class"
-                      id_mentee: "1"
-                      id_user: "1"
+                    id: 1
+                    title: "Acceptance"
+                    fullname_user: "Yovan"
+                    create_date: "03 December 2022"
+                    feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+                    status: "Join class"
+                    id_mentee: 1
+                    id_user: 3
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -1002,14 +1011,16 @@ paths:
         content:
           application/json:
             schema:
-                $ref: "#/components/schemas/EditLogObject"
+              $ref: "#/components/schemas/EditLogObject"
             example:
               id: 1
-              title: "Interview"
+              title: "Acceptance"
+              fullname_user: "Yovan"
+              create_date: "03 December 2022"
               feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
               status: "Join class"
-              id_mentee: "1"
-              id_user: "1"
+              id_mentee: 1
+              id_user: 3
       responses:
         '200':
           description: "Success update data"
@@ -1019,7 +1030,7 @@ paths:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success update LogS"
+                  message: "Success Update Log"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -1054,7 +1065,72 @@ paths:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success delete logs"
+                  message: "Success delete log"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+#### Data Endpoint
+  /data:
+    get:
+      tags:
+        - Data
+      summary: "Get All Static Data"
+      description: "Get all static data that api needed."
+      security:
+        - JWTAuth: []
+      responses:
+        '200':
+          description: A list of data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithData"
+              example:
+                  status: "Success"
+                  message: "Success get all data"
+                  data:
+                    mentee_status: [
+                      "None",
+                      "Active",
+                      "Join Class",
+                      "Placement",
+                      "Eleminated", 
+                    ]
+                    mentee_emergency_status: [
+                      "Orang Tua",
+                      "Kakek Nenek",
+                      "Saudara Kandung",
+                      "Saudara dari Orang Tua",
+                    ]
+                    mentee_education_type: [
+                      "Informatics",
+                      "Non-Informatics",
+                    ]
+                    mentee_gender: [
+                      "Male",
+                      "Female",
+                    ]
+                    team: [
+                      "Academic",
+                      "People",
+                      "Placement",
+                    ]                    
+                    role: [
+                      "Admin",
+                      "User",
+                    ]                    
+                    user_status: [
+                      "Active",
+                      "Non-Active",
+                      "Deleted",
+                    ]                    
+
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -1154,6 +1230,27 @@ components:
           type: string  
 
 ### Mentee Schemas
+    "GetMenteeListObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "name":
+          type: string
+        "class_code":
+          type: string
+        "status":
+          type: string
+        "education_type":
+          type: string    
+        "gender":
+          type: string
+        "id_class":
+          type: string      
+    "ArrayMenteeListObj":
+      type: array
+      items :
+        $ref: "#/components/schemas/GetMenteeListObject"
     "GetMenteeObject":
       type: object
       properties:
@@ -1191,8 +1288,14 @@ components:
           type: string    
         "education_graduate":
           type: string    
-        "id_class":
+        "class":
           type: string      
+        "id_class":
+          type: integer 
+        "logs":
+          type: array
+          items:
+            $ref: "#/components/schemas/ArrayLogObj"  
     "ArrayMenteeObj":
       type: array
       items :
@@ -1280,6 +1383,10 @@ components:
           type: integer
         "title":
           type: string
+        "fullname_user":
+          type: string
+        "created_date":
+          type: string
         "feedback":
           type: string  
         "status":
@@ -1358,6 +1465,26 @@ components:
           type: array
           items : 
             $ref: "#/components/schemas/ArrayClassObj" 
+    "SuccesArrayMenteeListResult":
+      type: object
+      properties:
+        status:
+          type: string
+        message: 
+          type: string
+        data:
+          type: array
+          items : 
+            $ref: "#/components/schemas/ArrayMenteeListObj" 
+    "SuccessMenteeResult":
+      type: object
+      properties:
+        status:
+          type: string
+        message: 
+          type: string
+        data:
+          $ref: "#/components/schemas/GetMenteeObject" 
     "SuccesArrayMenteeResult":
       type: object
       properties:
