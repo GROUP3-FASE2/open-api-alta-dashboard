@@ -69,18 +69,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseWithData"
+                $ref: "#/components/schemas/ResponseWithoutData"
               example:
                 status: "Success"
                 message: "Login Success"
-                data:
-                  id: 1
-                  full_name: "Budiman"
-                  email: "budi123@gmail.com"
-                  team: "Academic"
-                  role: "User"
-                  status: "Active"
-                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2NzAwMzYwMjcsInJvbGUiOiJ1c2VyIiwidXNlcklkIjoxfQ.pT-FmSraUUb8HY73ofYbbt3vFgbej0XaHP9VMas8Q44"
+                # data:
+                #   id: 1
+                #   full_name: "Budiman"
+                #   email: "budi123@gmail.com"
+                #   team: "Academic"
+                #   role: "User"
+                #   status: "Active"
+                #   token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2NzAwMzYwMjcsInJvbGUiOiJ1c2VyIiwidXNlcklkIjoxfQ.pT-FmSraUUb8HY73ofYbbt3vFgbej0XaHP9VMas8Q44"
         "400" :
           $ref : "#/components/responses/400"  
         "404" :
@@ -106,9 +106,9 @@ paths:
                 message: "Dashboard App Immersive Alta"
                 data:
                  user: "Hello, Budiman"
-                 Mentee_Active: 20
-                 Mentee_Placement: 10
-                 Mentee_Feedback: 50
+                 Mentee_Active: 100 Mentee
+                 Mentee_Placement: Jabodetabek
+                 Mentee_Feedback: 50 Feedback
         "400" :
           $ref : "#/components/responses/400"  
         "404" :
@@ -122,8 +122,8 @@ paths:
     post:
       tags:
         - Users
-      summary: "Insert Data User" 
-      description: "Register User dengan role User. Field role otomatis akan diinput user."
+      summary: "Create User" 
+      description: "Register User with Role = User."
       requestBody:
         required: true
         content:
@@ -138,7 +138,7 @@ paths:
               status: "Active" 
       responses:
         '201':
-          description: "Success create data"
+          description: "Success Create User"
           content:
             application/json:
               schema:
@@ -212,7 +212,7 @@ paths:
     get:
       tags:
         - Users
-      summary: "Get data user by id user"
+      summary: "Get User by Id"
       description: "Get data user using id user at path parameter. Only return 1 data."
       security:
         - JWTAuth: []
@@ -227,14 +227,14 @@ paths:
             example: 1
       responses:
         '200':
-          description: "Success get user by id"
+          description: "Success Get User by Id"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithData"
               example:
                   status: "Success"
-                  message: "Success get users by id"
+                  message: "Success Get User by Id"
                   data:
                     id: 1
                     full_name: "Jasiman"
@@ -253,8 +253,8 @@ paths:
     put:
       tags:
         - Users
-      summary: "Update data User"
-      description: "Update data user using request body and using id for reference at path parameter."
+      summary: "Update User"
+      description: "Update User using request body and using id for reference at path parameter."
       security:
         - JWTAuth: []
       parameters:
@@ -287,7 +287,7 @@ paths:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success update user."
+                  message: "Success Update user."
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -300,8 +300,8 @@ paths:
     delete:
       tags:
         - Users
-      summary: "Delete user"
-      description: "Delete user using id at path parameter as reference."
+      summary: "Delete User"
+      description: "Delete User using id at path parameter as reference."
       security:
         - JWTAuth: []
       parameters:
@@ -310,7 +310,7 @@ paths:
           required: true
           in: path
           schema:
-            description: "Id user 1."
+            description: "Id user 1"
             type: integer
             example: 1
       responses:
@@ -322,7 +322,7 @@ paths:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                 status: "Success"
-                message: "Success delete user"
+                message: "Success Delete user"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -337,8 +337,8 @@ paths:
     post:
       tags:
         - Classes
-      summary: "Insert Data Class" 
-      description: "Add class."
+      summary: "Create Class" 
+      description: "Create New Class"
       security:
         - JWTAuth: []
       requestBody:
@@ -348,22 +348,20 @@ paths:
             schema:
               $ref: "#/components/schemas/InsertClassObject"
             example:
-              name: "BE"
-              class_code: "B13"
+              name: "Frontend Engineer Batch 10"
       responses:
         '201':
-          description: "Success create data"
+          description: "Success Create Class"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithData"
               example:
                 status: "Success"
-                message: "Success add data."
+                message: "Success Create New Class"
                 data:
                   id: 1
-                  name: "BE"
-                  class_code: "B13"
+                  name: "Frontend Engineer Batch 10"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -424,8 +422,8 @@ paths:
     get:
       tags:
         - Classes
-      summary: "Get data class by id class"
-      description: "Get data class using id class at path parameter. Only return 1 data."
+      summary: "Get Class by Id"
+      description: "Get Class using id class at path parameter. Only return 1 data."
       security:
         - JWTAuth: []
       parameters:
@@ -439,18 +437,17 @@ paths:
             example: 1
       responses:
         '200':
-          description: "Success get class by id"
+          description: "Success Get Class by Id"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithData"
               example:
                   status: "Success"
-                  message: "Success get classes by id"
+                  message: "Success Get Class by Id"
                   data:
                     id: 1
-                    name: "BE"
-                    class_code: "B13"
+                    name: "Frontend Engineer Batch 10"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -462,8 +459,8 @@ paths:
     put:
       tags:
         - Classes
-      summary: "Update data Class"
-      description: "Update data class using request body and using id for reference at path parameter."
+      summary: "Update Class"
+      description: "Update Class using request body and using id for reference at path parameter."
       security:
         - JWTAuth: []
       parameters:
@@ -482,18 +479,17 @@ paths:
             schema:
                 $ref: "#/components/schemas/EditClassObject"
             example:
-              name: "BE"
-              class_code: "B13"
+              name: "Frontend Engineer Batch 10"
       responses:
         '200':
-          description: "Success update data"
+          description: "Success Update Class"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success update class"
+                  message: "Success Update Class"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -506,8 +502,8 @@ paths:
     delete:
       tags:
         - Classes
-      summary: "Delete class"
-      description: "Delete class using id at path parameter as reference."
+      summary: "Delete Class"
+      description: "Delete Class using id at path parameter as reference."
       security:
         - JWTAuth: []
       parameters:
@@ -521,14 +517,14 @@ paths:
             example: 1
       responses:
         '200':
-          description: "Success Delete Class."
+          description: "Success Delete Class"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success delete class"
+                  message: "Success Delete Class"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -543,8 +539,8 @@ paths:
     post:
       tags:
         - Mentees
-      summary: "Insert Data Mentees" 
-      description: "Add mentee."
+      summary: "Create Mentee" 
+      description: "Create New Mentee"
       security:
         - JWTAuth: []
       requestBody:
@@ -817,13 +813,13 @@ paths:
     delete:
       tags:
         - Mentees
-      summary: "Delete mentee"
-      description: "Delete mentee using id at path parameter as reference."
+      summary: "Delete Mentee"
+      description: "Delete Mentee using id at path parameter as reference."
       security:
         - JWTAuth: []
       parameters:
         - name: id
-          description: "Id mentee to delete data."
+          description: "Id mentee to delete"
           required: true
           in: path
           schema:
@@ -832,14 +828,14 @@ paths:
             example: 1
       responses:
         '200':
-          description: "Success Delete Mentee."
+          description: "Success Delete Mentee"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success delete mentee"
+                  message: "Success Delete Mentee"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -854,8 +850,8 @@ paths:
     post:
       tags:
         - Logs
-      summary: "Insert Data Logs/Feedback" 
-      description: "Add Logs/Feedback."
+      summary: "Create Log/Feedback" 
+      description: "Create New Log/Feedback"
       security:
         - JWTAuth: []
       requestBody:
@@ -950,8 +946,8 @@ paths:
     get:
       tags:
         - Logs
-      summary: "Get data log by id log"
-      description: "Get data log using id log at path parameter. Only return 1 data."
+      summary: "Get Log by Id"
+      description: "Get Log using id log at path parameter. Only return 1 data."
       security:
         - JWTAuth: []
       parameters:
@@ -965,14 +961,14 @@ paths:
             example: 1
       responses:
         '200':
-          description: "Success get log by id"
+          description: "Success Get Log by Id"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithData"
               example:
                   status: "Success"
-                  message: "Success get logs by id"
+                  message: "Success Get Log by Id"
                   data:
                     id: 1
                     title: "Acceptance"
@@ -1044,12 +1040,12 @@ paths:
       tags:
         - Logs
       summary: "Delete Log"
-      description: "Delete log using id at path parameter as reference."
+      description: "Delete Log using id at path parameter as reference."
       security:
         - JWTAuth: []
       parameters:
         - name: id
-          description: "Id log to delete data."
+          description: "Id log to delete"
           required: true
           in: path
           schema:
@@ -1058,14 +1054,14 @@ paths:
             example: 1
       responses:
         '200':
-          description: "Success Delete Log."
+          description: "Success Delete Log"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseWithoutData" 
               example:
                   status: "Success"
-                  message: "Success delete log"
+                  message: "Success Delete Log"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -1208,8 +1204,8 @@ components:
           type: integer
         "name":
           type: string
-        "class_code":
-          type: string  
+        # "class_code":
+        #   type: string  
     "ArrayClassObj":
       type: array
       items :
@@ -1219,15 +1215,15 @@ components:
       properties:
         "name":
           type: string
-        "class_code":
-          type: string 
+        # "class_code":
+        #   type: string 
     "EditClassObject":
       type: object
       properties:
         "name":
           type: string
-        "class_code":
-          type: string  
+        # "class_code":
+        #   type: string  
 
 ### Mentee Schemas
     "GetMenteeListObject":
