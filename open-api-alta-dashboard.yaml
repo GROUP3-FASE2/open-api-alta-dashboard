@@ -29,7 +29,7 @@ tags:
     description: API menampilkan inforamsi dashboard
   - name: Auth
     description:  API mengelola fitur Auth
-  - name: Users #login, register, lihat profile user, update profile user, delelte profile (non aktif dgn delete gorm)
+  - name: Users 
     description: API mengelola fitur User  
   - name: Classes
     description:  API mengelola fitur Class  
@@ -92,6 +92,8 @@ paths:
   /dashboard:
     get:
       summary: "Dashboard App Immersive Alta"
+      security:
+        - JWTAuth: []
       tags:
       - "Dashboard"
       responses:
@@ -107,7 +109,7 @@ paths:
                 data:
                  user: "Hello, Budiman"
                  Mentee_Active: 100 Mentee
-                 Mentee_Placement: Jabodetabek
+                 Mentee_Placement: 20 Mentee
                  Mentee_Feedback: 50 Feedback
         "400" :
           $ref : "#/components/responses/400"  
@@ -157,7 +159,7 @@ paths:
     get:
       tags:
         - Users
-      summary: "Get All Users And Search"
+      summary: "Get All Users And Search by name"
       description: "Get all users and can use query parameter to search. Input using lowercase"
       security:
         - JWTAuth: []
@@ -175,7 +177,7 @@ paths:
           in: query
           schema:
             type: string
-            example: "budi"
+            example: "budiman"
       responses:
         '200':
           description: A list of users
@@ -197,7 +199,7 @@ paths:
                       full_name: "Jasiman"
                       email: "Jasiman123@gmail.com"
                       team: "Academic"
-                      role: "User"
+                      role: "Admin"
                       status: "Active" 
         "400" :
           $ref : "#/components/responses/400"  
@@ -280,7 +282,7 @@ paths:
               status: "Active" 
       responses:
         '200':
-          description: "Success update data"
+          description: "Success update User"
           content:
             application/json:
               schema:
@@ -349,6 +351,7 @@ paths:
               $ref: "#/components/schemas/InsertClassObject"
             example:
               name: "Frontend Engineer Batch 10"
+              id_user: "1"
       responses:
         '201':
           description: "Success Create Class"
@@ -362,6 +365,7 @@ paths:
                 data:
                   id: 1
                   name: "Frontend Engineer Batch 10"
+                  id_user: "1"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -391,7 +395,7 @@ paths:
           in: query
           schema:
             type: string
-            example: "BE"
+            example: "Frontend Engineer Batch 10"
       responses:
         '200':
           description: A list of classes
@@ -404,11 +408,11 @@ paths:
                   message: "Success get all class"
                   data:
                     - id: 1
-                      name: "BE"
-                      class_code: "B13"
+                      name: "Frontend Engineer Batch 10"
+                      id_user: "1"
                     - id: 2
-                      name: "FE"
-                      class_code: "B10"
+                      name: "Backend Engineer Batch 13"
+                      id_user: "2"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -448,6 +452,7 @@ paths:
                   data:
                     id: 1
                     name: "Frontend Engineer Batch 10"
+                    id_user: "1"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -480,6 +485,7 @@ paths:
                 $ref: "#/components/schemas/EditClassObject"
             example:
               name: "Frontend Engineer Batch 10"
+              id_user: "1"
       responses:
         '200':
           description: "Success Update Class"
@@ -633,9 +639,9 @@ paths:
             "Eleminate":
               description: "Status = Elemintate. Show mentees where status mentee = eleminate."
               value: "Eleminate"
-        - name: category
+        - name: education_type
           in: query
-          description: "Filter result by education category."
+          description: "Filter result by education type."
           required: false 
           schema:
             type: string
@@ -659,15 +665,15 @@ paths:
                   data:
                     - id: 1
                       name: "Budiman"
-                      class_code: "BE 7"
+                      class_name: "Frontend Engineer Batch 10"
                       status: "Active"
                       education_type: "Informatic"
                       gender: "Male"
                       id_class: 1
                     - id: 2
                       name: "Jasiman"
-                      class_code: "QE 8"
-                      status: "Active"
+                      class_name: "Backend Engineer Batch 13"
+                      status: "Non-Active"
                       education_type: "Non-Informatic"
                       gender: "Male"
                       id_class: 2
@@ -865,7 +871,6 @@ paths:
               feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
               status: "Join class"
               id_mentee: 1
-              id_user: 1
       responses:
         '201':
           description: "Success create data"
@@ -887,8 +892,8 @@ paths:
     get:
       tags:
         - Logs
-      summary: "Get All Logs And Search"
-      description: "Get all log and can use query parameter to search. Input using lowercase"
+      summary: "Get All Logs belongs to user And Search by title"
+      description: "Get all log belongs to user and can use query parameter to search by title. Input using lowercase"
       security:
         - JWTAuth: []
       parameters:
@@ -931,53 +936,8 @@ paths:
                     create_date: "03 December 2022"
                     feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
                     status: "Join class"
-                    id_mentee: 1
-                    id_user: 3
-        "400" :
-          $ref : "#/components/responses/400"  
-        "401" :
-          $ref : "#/components/responses/401"  
-        "404" :
-          $ref : "#/components/responses/404"  
-        '500':
-          $ref: "#/components/responses/500"
-
-  /logs/{id}:
-    get:
-      tags:
-        - Logs
-      summary: "Get Log by Id"
-      description: "Get Log using id log at path parameter. Only return 1 data."
-      security:
-        - JWTAuth: []
-      parameters:
-        - name: id
-          description: "Id log to get data"
-          required: true
-          in: path
-          schema:
-            description: "Id log 1"
-            type: integer
-            example: 1
-      responses:
-        '200':
-          description: "Success Get Log by Id"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResponseWithData"
-              example:
-                  status: "Success"
-                  message: "Success Get Log by Id"
-                  data:
-                    id: 1
-                    title: "Acceptance"
-                    fullname_user: "Yovan"
-                    create_date: "03 December 2022"
-                    feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
-                    status: "Join class"
-                    id_mentee: 1
-                    id_user: 3
+                    id_mentee: 3
+                    id_user: 1
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -1016,7 +976,6 @@ paths:
               feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
               status: "Join class"
               id_mentee: 1
-              id_user: 3
       responses:
         '200':
           description: "Success update data"
@@ -1094,9 +1053,18 @@ paths:
                     mentee_status: [
                       "None",
                       "Active",
+                      "Non-Active",
+                      "Interview",
                       "Join Class",
+                      "Unit 1",
+                      "Unit 2",
+                      "Unit 3",
+                      "Repeat Unit 1",
+                      "Repeat Unit 2",
+                      "Repeat Unit 3",
                       "Placement",
-                      "Eleminated", 
+                      "Eleminated",
+                      "Graduate", 
                     ]
                     mentee_emergency_status: [
                       "Orang Tua",
@@ -1113,9 +1081,11 @@ paths:
                       "Female",
                     ]
                     team: [
+                      "Mentor",
                       "Academic",
-                      "People",
+                      "PeopleSkill",
                       "Placement",
+                      "Admission"
                     ]                    
                     role: [
                       "Admin",
@@ -1204,8 +1174,8 @@ components:
           type: integer
         "name":
           type: string
-        # "class_code":
-        #   type: string  
+        "id_user":
+          type: string
     "ArrayClassObj":
       type: array
       items :
@@ -1215,15 +1185,15 @@ components:
       properties:
         "name":
           type: string
-        # "class_code":
-        #   type: string 
+        "id_user":
+          type: string
     "EditClassObject":
       type: object
       properties:
         "name":
           type: string
-        # "class_code":
-        #   type: string  
+        "id_user":
+          type: string 
 
 ### Mentee Schemas
     "GetMenteeListObject":
@@ -1233,7 +1203,7 @@ components:
           type: integer
         "name":
           type: string
-        "class_code":
+        "class_name":
           type: string
         "status":
           type: string
