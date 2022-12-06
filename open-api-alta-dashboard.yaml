@@ -73,14 +73,14 @@ paths:
               example:
                 status: "Success"
                 message: "Login Success"
-                # data:
-                #   id: 1
-                #   full_name: "Budiman"
-                #   email: "budi123@gmail.com"
-                #   team: "Academic"
-                #   role: "User"
-                #   status: "Active"
-                #   token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2NzAwMzYwMjcsInJvbGUiOiJ1c2VyIiwidXNlcklkIjoxfQ.pT-FmSraUUb8HY73ofYbbt3vFgbej0XaHP9VMas8Q44"
+                data:
+                  id: 1
+                  full_name: "Budiman"
+                  email: "budi123@gmail.com"
+                  team: "Academic"
+                  role: "User"
+                  status: "Active"
+                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2NzAwMzYwMjcsInJvbGUiOiJ1c2VyIiwidXNlcklkIjoxfQ.pT-FmSraUUb8HY73ofYbbt3vFgbej0XaHP9VMas8Q44"
         "400" :
           $ref : "#/components/responses/400"  
         "404" :
