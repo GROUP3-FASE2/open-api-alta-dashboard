@@ -351,7 +351,7 @@ paths:
               $ref: "#/components/schemas/InsertClassObject"
             example:
               name: "Frontend Engineer Batch 10"
-              id_user: "1"
+              user_id: "1"
       responses:
         '201':
           description: "Success Create Class"
@@ -365,7 +365,7 @@ paths:
                 data:
                   id: 1
                   name: "Frontend Engineer Batch 10"
-                  id_user: "1"
+                  user_id: "1"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -409,10 +409,10 @@ paths:
                   data:
                     - id: 1
                       name: "Frontend Engineer Batch 10"
-                      id_user: "1"
+                      user_id: "1"
                     - id: 2
                       name: "Backend Engineer Batch 13"
-                      id_user: "2"
+                      user_id: "2"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -452,7 +452,7 @@ paths:
                   data:
                     id: 1
                     name: "Frontend Engineer Batch 10"
-                    id_user: "1"
+                    user_id: "1"
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -485,7 +485,7 @@ paths:
                 $ref: "#/components/schemas/EditClassObject"
             example:
               name: "Frontend Engineer Batch 10"
-              id_user: "1"
+              user_id: "1"
       responses:
         '200':
           description: "Success Update Class"
@@ -572,7 +572,7 @@ paths:
               education_type: "Informatic"
               education_major: "Sarjana"
               education_graduate: "2021"
-              id_class: 1
+              class_id: 1
       responses:
         '201':
           description: "Success create data"
@@ -613,7 +613,7 @@ paths:
           schema:
             type: string
             example: "budiman"
-        - name: id_class
+        - name: class_id
           in: query
           description: "Filter result by class."
           required: false 
@@ -669,14 +669,14 @@ paths:
                       status: "Active"
                       education_type: "Informatic"
                       gender: "Male"
-                      id_class: 1
+                      class_id: 1
                     - id: 2
                       name: "Jasiman"
                       class_name: "Backend Engineer Batch 13"
                       status: "Non-Active"
                       education_type: "Non-Informatic"
                       gender: "Male"
-                      id_class: 2
+                      class_id: 2
                       
         "400" :
           $ref : "#/components/responses/400"  
@@ -731,7 +731,7 @@ paths:
                   education_type: "Informatic"
                   education_major: "Sarjana"
                   education_graduate: "2021"
-                  id_class: 1
+                  class_id: 1
                   logs:
                   - id: 1
                     title: "Interview"
@@ -739,16 +739,16 @@ paths:
                     create_date: "03 November 2022"
                     feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
                     status: "None"
-                    id_mentee: 1
-                    id_user: 1
+                    mentee_id: 1
+                    user_id: 1
                   - id: 2
                     title: "Acceptance"
                     fullname_user: "Yovan"
                     create_date: "03 December 2022"
                     feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
                     status: "Join class"
-                    id_mentee: 1
-                    id_user: 3
+                    mentee_id: 1
+                    user_id: 3
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -796,7 +796,7 @@ paths:
               education_type: "Informatic"
               education_major: "Sarjana"
               education_graduate: "2021"
-              id_class: 1
+              class_id: 1
       responses:
         '200':
           description: "Success update data"
@@ -870,7 +870,7 @@ paths:
               title: "Interview"
               feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
               status: "Join class"
-              id_mentee: 1
+              mentee_id: 1
       responses:
         '201':
           description: "Success create data"
@@ -928,16 +928,16 @@ paths:
                     create_date: "03 November 2022"
                     feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
                     status: "None"
-                    id_mentee: 1
-                    id_user: 1
+                    mentee_id: 1
+                    user_id: 1
                   - id: 2
                     title: "Acceptance"
                     fullname_user: "Yovan"
                     create_date: "03 December 2022"
                     feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
                     status: "Join class"
-                    id_mentee: 3
-                    id_user: 1
+                    mentee_id: 3
+                    user_id: 1
         "400" :
           $ref : "#/components/responses/400"  
         "401" :
@@ -975,7 +975,7 @@ paths:
               create_date: "03 December 2022"
               feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
               status: "Join class"
-              id_mentee: 1
+              mentee_id: 1
       responses:
         '200':
           description: "Success update data"
@@ -1174,7 +1174,7 @@ components:
           type: integer
         "name":
           type: string
-        "id_user":
+        "user_id":
           type: string
     "ArrayClassObj":
       type: array
@@ -1185,14 +1185,14 @@ components:
       properties:
         "name":
           type: string
-        "id_user":
+        "user_id":
           type: string
     "EditClassObject":
       type: object
       properties:
         "name":
           type: string
-        "id_user":
+        "user_id":
           type: string 
 
 ### Mentee Schemas
@@ -1211,7 +1211,7 @@ components:
           type: string    
         "gender":
           type: string
-        "id_class":
+        "class_id":
           type: string      
     "ArrayMenteeListObj":
       type: array
@@ -1256,7 +1256,7 @@ components:
           type: string    
         "class":
           type: string      
-        "id_class":
+        "class_id":
           type: integer 
         "logs":
           type: array
@@ -1301,7 +1301,7 @@ components:
           type: string    
         "education_graduate":
           type: string    
-        "id_class":
+        "class_id":
           type: string   
     "EditMenteeObject":
       type: object
@@ -1338,7 +1338,7 @@ components:
           type: string    
         "education_graduate":
           type: string    
-        "id_class":
+        "class_id":
           type: string    
 
 ### Log Schemas
@@ -1357,9 +1357,9 @@ components:
           type: string  
         "status":
           type: string  
-        "id_mentee":
+        "mentee_id":
           type: integer  
-        "id_user":
+        "user_id":
           type: integer  
     "ArrayLogObj":
       type: array
@@ -1374,9 +1374,9 @@ components:
           type: string  
         "status":
           type: string  
-        "id_mentee":
+        "mentee_id":
           type: integer  
-        "id_user":
+        "user_id":
           type: integer  
     "EditLogObject":
       type: object
@@ -1387,9 +1387,9 @@ components:
           type: string  
         "status":
           type: string  
-        "id_mentee":
+        "mentee_id":
           type: integer  
-        "id_user":
+        "user_id":
           type: integer  
 
 ### Other Schemas
