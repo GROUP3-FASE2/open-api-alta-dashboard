@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
   description: |
-    Dokumen open-api aplikasi Alta Dashboard
+    Dokumen Open API Aplikasi Alta Immersive Dashboard
   version: "1.0.0"
-  title: Alta Dashboard
+  title: Immersive Dashboard App Project
   termsOfService: 'http://swagger.io/terms/'
   contact:
     email: apiteam@swagger.io
@@ -15,20 +15,35 @@ servers:
   - description: Base URL Server GCP
     url: http://54.179.170.113:8000
   - description: SwaggerHub API Auto Mocking
-    url: //https://virtserver.swaggerhub.com/alta_dashhboard/alta_dashbaordt3/1.0.0
+    url: https://virtserver.swaggerhub.com/YUSNARSETIYADI150403/OPEN-API-DASHBOARD/1.0.0
+  - description: BE servers
+    url: https://{environment}.api.alta.id
+    variables:
+      environment:
+        default: dev
+        enum:
+          - "dev"
+          - "prod"
 tags:
   - name: Dashboard 
     description: API menampilkan inforamsi dashboard
-  - name: User #login, register, lihat profile user, update profile user, delelte profile (non aktif dgn delete gorm)
+  - name: Auth
+    description:  API mengelola fitur Auth
+  - name: Users 
     description: API mengelola fitur User  
-  - name: Class
+  - name: Classes
     description:  API mengelola fitur Class  
-  - name: Mentee
+  - name: Mentees
     description:  API mengelola fitur Mentee
-  - name: Log
+  - name: Logs
     description:  API mengelola fitur Log / Feedback mentee
-  
+  - name: Data
+    description:  API mengelola data statik yang dibutuhkan aplikasi
+
+
 paths:
+
+### Endpoint Auth
   /login:
     post:
       summary: "Login User"
@@ -54,8 +69,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccesLoginResult"
+                $ref: "#/components/schemas/ResponseWithoutData"
               example:
+                status: "Success"
                 message: "Login Success"
                 data:
                   id: 1
@@ -67,21 +83,53 @@ paths:
                   token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2NzAwMzYwMjcsInJvbGUiOiJ1c2VyIiwidXNlcklkIjoxfQ.pT-FmSraUUb8HY73ofYbbt3vFgbej0XaHP9VMas8Q44"
         "400" :
           $ref : "#/components/responses/400"  
+        "404" :
+          $ref : "#/components/responses/404"  
         '500':
           $ref: "#/components/responses/500"
 
-  /register :
-    post:
+### Endpoint Dashboard
+  /dashboard:
+    get:
+      summary: "Dashboard App Immersive Alta"
       security:
-        - bearerAuth: []
-      summary: "Insert Data User"
+        - JWTAuth: []
       tags:
-      - "User"
+      - "Dashboard"
+      responses:
+        "200":
+          description: "Immersive Dashboard"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithData"
+              example:
+                status: "Success"
+                message: "Dashboard App Immersive Alta"
+                data:
+                 user: "Hello, Budiman"
+                 Mentee_Active: 100 Mentee
+                 Mentee_Placement: 20 Mentee
+                 Mentee_Feedback: 50 Feedback
+        "400" :
+          $ref : "#/components/responses/400"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    
+
+### Endpoint Users
+  /users:
+    post:
+      tags:
+        - Users
+      summary: "Create User" 
+      description: "Register User with Role = User."
       requestBody:
-        description: "Register User dengan role User. Field role otomatis akan diinput user."
         required: true
         content:
-          "application/json":
+          application/json:
             schema:
               $ref: "#/components/schemas/InsertUserObject"
             example:
@@ -89,941 +137,1004 @@ paths:
               email: "budi123@gmail.com"
               password: "123"
               team: "Academic"
-              status: "Active"     
+              status: "Active" 
       responses:
-        "201":
-          description: "Success create data"
+        '201':
+          description: "Success Create User"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResult"
+                $ref: "#/components/schemas/ResponseWithoutData"
               example:
-                message: "User successfully created"
-                data:
-                  id: 1
-                  full_name: "Budiman"
-                  email: "budi123@gmail.com"
-                  team: "Academic"
-                  role: "User"
-                  status: "Active"  
+                status: "Success"
+                message: "User successfully created" 
         "400" :
-          $ref : "#/components/responses/400"
+          $ref : "#/components/responses/400"  
         "401" :
-          $ref : "#/components/responses/401"
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
         '500':
           $ref: "#/components/responses/500"
-  /users :
-    put: 
-      security:
-        - bearerAuth: []
-      summary: "Update Data user"
+    get:
       tags:
-        - "User"
+        - Users
+      summary: "Get All Users And Search by name"
+      description: "Get all users and can use query parameter to search. Input using lowercase"
+      security:
+        - JWTAuth: []
       parameters:
-      - name : id
-        in : path
-        description: "Id User to update data"
-        required: true
-        schema :
-          type: integer
-        examples:
-          1 :
-            description: "Id user 1 "
-            value : 1
+        - name: ""
+          description: "No value in parameter."
+          required: false
+          in: query
+          schema:
+            type: string
+            example: ""
+        - name: name
+          description: "nama user"
+          required: false
+          in: query
+          schema:
+            type: string
+            example: "budiman"
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccesArrayUserResult"
+              example:
+                  status: "Success"
+                  message: "Success get all users"
+                  data:
+                    - id: 1
+                      full_name: "Budiman"
+                      email: "budi123@gmail.com"
+                      team: "Academic"
+                      role: "User"
+                      status: "Active" 
+                    - id: 2
+                      full_name: "Jasiman"
+                      email: "Jasiman123@gmail.com"
+                      team: "Academic"
+                      role: "Admin"
+                      status: "Active" 
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: "Get User by Id"
+      description: "Get data user using id user at path parameter. Only return 1 data."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id user to get data"
+          required: true
+          in: path
+          schema:
+            description: "Id user 1"
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: "Success Get User by Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithData"
+              example:
+                  status: "Success"
+                  message: "Success Get User by Id"
+                  data:
+                    id: 1
+                    full_name: "Jasiman"
+                    email: "Jasiman123@gmail.com"
+                    team: "Academic"
+                    role: "User"
+                    status: "Active" 
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    put:
+      tags:
+        - Users
+      summary: "Update User"
+      description: "Update User using request body and using id for reference at path parameter."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id user to update data"
+          required: true
+          in: path
+          schema:
+            description: "Id user 1"
+            type: integer
+            example: 1
       requestBody:
-        description: "Update data User. Field role tidak bisa di ganti."
         required: true
         content:
-          "application/json":
+          application/json:
             schema:
-              $ref: "#/components/schemas/EditUserObject"
+                $ref: "#/components/schemas/EditUserObject"
             example:
               full_name: "Budiman"
               email: "budi123@gmail.com"
               password: "123"
               team: "Academic"
-              status: "Active"     
+              status: "Active" 
+      responses:
+        '200':
+          description: "Success update User"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithoutData" 
+              example:
+                  status: "Success"
+                  message: "Success Update user."
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+    delete:
+      tags:
+        - Users
+      summary: "Delete User"
+      description: "Delete User using id at path parameter as reference."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id user to delete data."
+          required: true
+          in: path
+          schema:
+            description: "Id user 1"
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: "Success Delete User."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithoutData" 
+              example:
+                status: "Success"
+                message: "Success Delete user"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+### Endpoint Classses
+  /classes:
+    post:
+      tags:
+        - Classes
+      summary: "Create Class" 
+      description: "Create New Class"
+      security:
+        - JWTAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InsertClassObject"
+            example:
+              name: "Frontend Engineer Batch 10"
+              id_user: "1"
+      responses:
+        '201':
+          description: "Success Create Class"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithData"
+              example:
+                status: "Success"
+                message: "Success Create New Class"
+                data:
+                  id: 1
+                  name: "Frontend Engineer Batch 10"
+                  id_user: "1"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    get:
+      tags:
+        - Classes
+      summary: "Get All Class And Search"
+      description: "Get all class and can use query parameter to search. Input using lowercase"
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: ""
+          description: "No value in parameter."
+          required: false
+          in: query
+          schema:
+            type: string
+            example: ""
+        - name: name
+          description: "Class Name"
+          required: false
+          in: query
+          schema:
+            type: string
+            example: "Frontend Engineer Batch 10"
+      responses:
+        '200':
+          description: A list of classes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccesArrayClassResult"
+              example:
+                  status: "Success"
+                  message: "Success get all class"
+                  data:
+                    - id: 1
+                      name: "Frontend Engineer Batch 10"
+                      id_user: "1"
+                    - id: 2
+                      name: "Backend Engineer Batch 13"
+                      id_user: "2"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+  /classes/{id}:
+    get:
+      tags:
+        - Classes
+      summary: "Get Class by Id"
+      description: "Get Class using id class at path parameter. Only return 1 data."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id class to get data"
+          required: true
+          in: path
+          schema:
+            description: "Id class 1"
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: "Success Get Class by Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithData"
+              example:
+                  status: "Success"
+                  message: "Success Get Class by Id"
+                  data:
+                    id: 1
+                    name: "Frontend Engineer Batch 10"
+                    id_user: "1"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    put:
+      tags:
+        - Classes
+      summary: "Update Class"
+      description: "Update Class using request body and using id for reference at path parameter."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id class to update data"
+          required: true
+          in: path
+          schema:
+            description: "Id class 1"
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/EditClassObject"
+            example:
+              name: "Frontend Engineer Batch 10"
+              id_user: "1"
+      responses:
+        '200':
+          description: "Success Update Class"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithoutData" 
+              example:
+                  status: "Success"
+                  message: "Success Update Class"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+    delete:
+      tags:
+        - Classes
+      summary: "Delete Class"
+      description: "Delete Class using id at path parameter as reference."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id class to delete data."
+          required: true
+          in: path
+          schema:
+            description: "Id class 1."
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: "Success Delete Class"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithoutData" 
+              example:
+                  status: "Success"
+                  message: "Success Delete Class"
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+
+### Endpoint Mentees
+  /mentees:
+    post:
+      tags:
+        - Mentees
+      summary: "Create Mentee" 
+      description: "Create New Mentee"
+      security:
+        - JWTAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InsertMenteeObject"
+            example:
+              name: "Budiman"
+              status: "Active"
+              gender: "Male"
+              nickname: "Budi"
+              address: "Jl. Srengseng Sawah No.17, RW.12, Srengseng Sawah, Kec. Jagakarsa, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12630"
+              home_address: "Jl. Srengseng Sawah No.17, RW.12, Srengseng Sawah, Kec. Jagakarsa, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12630"
+              email: "budi@mail.com"
+              telegram: "budidoremi"
+              discord: "budidiscord"
+              phone: "08123989907"
+              emegency_name: "YantoFebrian"
+              emergency_phone: "08456938383"
+              emergency_status: "Orang Tua"
+              education_type: "Informatic"
+              education_major: "Sarjana"
+              education_graduate: "2021"
+              id_class: 1
+      responses:
+        '201':
+          description: "Success create data"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseWithoutData"
+              example:
+                status: "Success"
+                message: "Success add data."
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    get:
+      tags:
+        - Mentees
+      summary: "Get All Mentees with Search By Name and Filter Result."
+      description: "Get all mentee, query parameter to search by name and filter by status, category and class. Input using lowercase"
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: ""
+          description: "No value in parameter."
+          required: false
+          in: query
+          schema:
+            type: string
+            example: ""
+        - name: name
+          description: "Mentee Name"
+          required: false
+          in: query
+          schema:
+            type: string
+            example: "budiman"
+        - name: id_class
+          in: query
+          description: "Filter result by class."
+          required: false 
+          schema:
+            type: integer
+          examples:
+            1:
+              description: "Id Class = 1. Show mentees where class id = 1."
+              value: 1
+            2:
+              description: "Id Class = 2. Show mentees where class id = 2."
+              value: 2
+        - name: status
+          in: query
+          description: "Filter result by mentee status."
+          required: false 
+          schema:
+            type: string
+          examples:
+            "Placement":
+              description: "Status = Placement. Show mentees where status mentee = placement."
+              value: "Placement"
+            "Eleminate":
+              description: "Status = Elemintate. Show mentees where status mentee = eleminate."
+              value: "Eleminate"
+        - name: education_type
+          in: query
+          description: "Filter result by education type."
+          required: false 
+          schema:
+            type: string
+          examples:
+            "Informatic":
+              description: "Category = Informatic. Show mentees where status mentee from informatic major."
+              value: "Informatic"
+            "Non-Informatic":
+              description: "Category = Non-Informatic. Show mentees where status mentee from non-informatic major."
+              value: "Non-Informatic"
+      responses:
+        '200':
+          description: A list of mentees
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccesArrayMenteeListResult"
+              example:
+                  status: "Success"
+                  message: "Success get all mentees"
+                  data:
+                    - id: 1
+                      name: "Budiman"
+                      class_name: "Frontend Engineer Batch 10"
+                      status: "Active"
+                      education_type: "Informatic"
+                      gender: "Male"
+                      id_class: 1
+                    - id: 2
+                      name: "Jasiman"
+                      class_name: "Backend Engineer Batch 13"
+                      status: "Non-Active"
+                      education_type: "Non-Informatic"
+                      gender: "Male"
+                      id_class: 2
+                      
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+  /mentees/{id}:
+    get:
+      tags:
+        - Mentees
+      summary: "Get data mentee by id mentee"
+      description: "Get data mentee using id mentee at path parameter. Only return 1 data."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id mentee to get data"
+          required: true
+          in: path
+          schema:
+            description: "Id mentee 1"
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: "Success get mentee by id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessMenteeResult"
+              example:
+                status: "Success"
+                message: "Success get mentee by id"
+                data:
+                  id: 1
+                  name: "Budiman"
+                  status: "Active"
+                  gender: "Male"
+                  nickname: "Budi"
+                  address: "Jl. Srengseng Sawah No.17, RW.12, Srengseng Sawah, Kec. Jagakarsa, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12630"
+                  home_address: "Jl. Srengseng Sawah No.17, RW.12, Srengseng Sawah, Kec. Jagakarsa, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12630"
+                  email: "budi@mail.com"
+                  telegram: "budidoremi"
+                  discord: "budidiscord"
+                  phone: "08123989907"
+                  emegency_name: "YantoFebrian"
+                  emergency_phone: "08456938383"
+                  emergency_status: "Orang Tua"
+                  education_type: "Informatic"
+                  education_major: "Sarjana"
+                  education_graduate: "2021"
+                  id_class: 1
+                  logs:
+                  - id: 1
+                    title: "Interview"
+                    fullname_user: "Ismail"
+                    create_date: "03 November 2022"
+                    feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+                    status: "None"
+                    id_mentee: 1
+                    id_user: 1
+                  - id: 2
+                    title: "Acceptance"
+                    fullname_user: "Yovan"
+                    create_date: "03 December 2022"
+                    feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+                    status: "Join class"
+                    id_mentee: 1
+                    id_user: 3
+        "400" :
+          $ref : "#/components/responses/400"  
+        "401" :
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
+        '500':
+          $ref: "#/components/responses/500"
+    put:
+      tags:
+        - Mentees
+      summary: "Update data Mentee"
+      description: "Update data mentee using request body and using id for reference at path parameter."
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id mentee to update data"
+          required: true
+          in: path
+          schema:
+            description: "Id mentee 1"
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EditMenteeObject"
+            example:
+              name: "Budiman"
+              status: "Active"
+              gender: "Male"
+              nickname: "Budi"
+              address: "Jl. Srengseng Sawah No.17, RW.12, Srengseng Sawah, Kec. Jagakarsa, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12630"
+              home_address: "Jl. Srengseng Sawah No.17, RW.12, Srengseng Sawah, Kec. Jagakarsa, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12630"
+              email: "budi@mail.com"
+              telegram: "budidoremi"
+              discord: "budidiscord"
+              phone: "08123989907"
+              emegency_name: "YantoFebrian"
+              emergency_phone: "08456938383"
+              emergency_status: "Orang Tua"
+              education_type: "Informatic"
+              education_major: "Sarjana"
+              education_graduate: "2021"
+              id_class: 1
       responses:
         '200':
           description: "Success update data"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResult"
+                $ref: "#/components/schemas/ResponseWithoutData" 
               example:
-                message: "User successfully updated"
-                data:
-                  id: 1
-                  full_name: "Budiman"
-                  email: "budi123@gmail.com"
-                  team: "Academic"
-                  role: "User"
-                  status: "Active"
+                  status: "Success"
+                  message: "Success update mentee"
         "400" :
-          $ref : "#/components/responses/400"
+          $ref : "#/components/responses/400"  
         "401" :
-          $ref : "#/components/responses/401"           
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
         '500':
           $ref: "#/components/responses/500"
+
     delete:
+      tags:
+        - Mentees
+      summary: "Delete Mentee"
+      description: "Delete Mentee using id at path parameter as reference."
       security:
-        - bearerAuth: []
-      summary: "Delete User Data"
-      tags:
-        - "User"
+        - JWTAuth: []
+      parameters:
+        - name: id
+          description: "Id mentee to delete"
+          required: true
+          in: path
+          schema:
+            description: "Id mentee 1."
+            type: integer
+            example: 1
       responses:
-        "200":
-          description: "Success Delete Data"
+        '200':
+          description: "Success Delete Mentee"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResult"
+                $ref: "#/components/schemas/ResponseWithoutData" 
               example:
-                message: "Success Delete Data"
+                  status: "Success"
+                  message: "Success Delete Mentee"
         "400" :
-          $ref : "#/components/responses/400"
+          $ref : "#/components/responses/400"  
         "401" :
-          $ref : "#/components/responses/401"   
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
         '500':
           $ref: "#/components/responses/500"
 
-  /users/username:
-    get: 
-      summary: "Profil User"
-      description: "Menggunakan username untuk mencari profil user. Dapat diakses tanpa token."
-      tags:
-        - "User"
-      responses:
-        "200":
-          description: "Success Profile"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResult"
-              example:
-                message: "User successfully Profile"
-                data:
-                  id: 1
-                  username: "adidas"
-                  email: "adidas@gmail.com"
-                  name: "adidas Feet"
-                  phone: "08771079"
-                  address: "jl.gunung anthena 1 no 11a, denpasar barat, Bali"
-                  shop_name: "Adidas Store"
-                  image_url: "https://upload.wikimedia.org/wikipedia/commons/f/fe/Logo_Adidas.png"
-        "400" :
-          $ref : "#/components/responses/400"
-        "401" :
-          $ref : "#/components/responses/401"   
-        '500':
-          $ref: "#/components/responses/500"
-  /me:
-    get:
-      security:
-        - bearerAuth: []
-      summary: "Get me data User."
-      description: "Menampilkan data profil user yang sedang login. Membutuhkan Token."
-      tags:
-        - "User"
-      responses:
-        "200":
-          description: "Success User Me"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResult"
-              example:
-                message: "User successfully Me"
-                data:
-                  id: 1
-                  username: "adidas"
-                  email: "adidas@gmail.com"
-                  name: "adidas Feet"
-                  phone: "08771079"
-                  address: "jl.gunung anthena 1 no 11a, denpasar barat, Bali"
-                  shop_name: "Adidas Store"
-                  image_url: "https://upload.wikimedia.org/wikipedia/commons/f/fe/Logo_Adidas.png"
-        "400" :
-          $ref : "#/components/responses/400"
-        "401" :
-          $ref : "#/components/responses/401"   
-        '500':
-          $ref: "#/components/responses/500"
-
-########## PRODUCT ##########
-
-  /products:
+### Endpoint Logs
+  /logs:
     post:
-      security:
-        - bearerAuth: []
-      summary: "Post data Product"
       tags:
-        - "Product"
+        - Logs
+      summary: "Create Log/Feedback" 
+      description: "Create New Log/Feedback"
+      security:
+        - JWTAuth: []
       requestBody:
-        description: "Post data Product tanpa id user yang input(seller) dan shop name karena akan diambil dari token."
         required: true
         content:
-          "multipart/form-data":
+          application/json:
             schema:
-              $ref: "#/components/schemas/InsertProductObject"
+              $ref: "#/components/schemas/InsertLogObject"
             example:
-              product_name: "Adidas Response Plus"
-              price: 2000000
-              description: |
-                Adidas Response Plus bisa jadi pilihan buat kamu yang senang lari sore di taman sekitar rumah. Menggunakan bahan air mesh, sepatu yang dibanderol dengan harga Rp. 1.599.000 ini mengedepankan fitur sirkulasi udara untuk kaki kamu biar terus terasa nyaman dan nggak gampang berkeringat. Selain itu, outsole-nya menggunakan teknologi Stretchweb yang menyesuaikan pergerakan kaki kamu ketika memijak. 
-              stock: 20
-              category: "style"
-              file: "9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBhQSERUUExQVFRUWGRwaGBgYGB0dGxkcHxccGxocGxoYHCYgGxojHBsdHy8gJCgpLSwsGB4xNTAqNSYrLCkBCQoKDgwOGg8PGiklHx8pLCwpKSkpKSwpLCkpKSwpLCksKSwsLCkpKSkpLCkpKSwpLCwsKSwsLCksKSkpKSksKf/AABEIAJ0BQQMBIgACEQEDEQH/xAAcAAACAwEBAQEAAAAAAAAAAAAEBQIDBgEABwj/xABFEAACAQIEBAQDBgMGAwcFAAABAhEDIQAEEjEFQVFhBhMicTKBkRRCobHB8CNS0QcVM1Ni4RaS8TRygpOiwtIkQ1RVY//EABoBAAIDA."
-            encoding:
-              file:
-                contentType: image/png, image/jpeg                   
+              title: "Interview"
+              feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+              status: "Join class"
+              id_mentee: 1
       responses:
-        "201":
-          description: "Success Post Product"
+        '201':
+          description: "Success create data"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResult"
+                $ref: "#/components/schemas/ResponseWithoutData"
               example:
-                message: "Product successfully Post"
-                data:
-                  id: 1
-                  product_name: "Adidas Response Plus"
-                  price: 2000000
-                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
-                  description: |
-                    Adidas Response Plus bisa jadi pilihan buat kamu yang senang lari sore di taman sekitar rumah. Menggunakan bahan air mesh, sepatu yang dibanderol dengan harga Rp. 1.599.000 ini mengedepankan fitur sirkulasi udara untuk kaki kamu biar terus terasa nyaman dan nggak gampang berkeringat. Selain itu, outsole-nya menggunakan teknologi Stretchweb yang menyesuaikan pergerakan kaki kamu ketika memijak. 
-                  stock: 20
-                  category: "style"
-                  shop_name: "Adidas Shop"
-                  id_user_seller: 1
-              encoding:
-                file:
-                  contentType: image/png, image/jpeg  
+                status: "Success"
+                message: "Success add data."
         "400" :
-          $ref : "#/components/responses/400"
+          $ref : "#/components/responses/400"  
         "401" :
-          $ref : "#/components/responses/401"   
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
         '500':
           $ref: "#/components/responses/500"
     get:
-      summary: "Get All data Product"
       tags:
-        - "Product"
+        - Logs
+      summary: "Get All Logs belongs to user And Search by title"
+      description: "Get all log belongs to user and can use query parameter to search by title. Input using lowercase"
+      security:
+        - JWTAuth: []
       parameters:
-        - name: id_user_seller
+        - name: ""
+          description: "No value in parameter."
+          required: false
           in: query
-          description: "Id user as seller. Get product that sell by 1 user. If empty will get from all user."
-          required: false 
-          schema:
-            type: integer
-          examples:            
-            "":
-              description: "no id parameter"
-              value: 
-            1:
-              description: "User with id 1"
-              value: 1
-            2:
-              description: "User with id 2"
-              value: 2
-        - name: category
-          in: query
-          description: "Query Get Product using filter by 1 category. If empty will get from all category. Input using lowercase"
-          required: false 
           schema:
             type: string
-          examples:
-            "":
-              description: "no category parameter"
-              value: 
-            "style":
-              description: "Get Product filter by style category."
-              value: "style"
-            "books":
-              description: "Get Product filter by books category."
-              value: "style" 
-      responses:
-        "200":
-          description: "Success Get All data Product"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccesArrayProductResult"
-              example:
-                message: "Get All Product successfully"
-                data:
-                - id: 1
-                  product_name: "Adidas Response Plus"
-                  price: 2000000
-                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
-                  description: |
-                    Adidas Response Plus bisa jadi pilihan buat kamu yang senang lari sore di taman sekitar rumah. Menggunakan bahan air mesh, sepatu yang dibanderol dengan harga Rp. 1.599.000 ini mengedepankan fitur sirkulasi udara untuk kaki kamu biar terus terasa nyaman dan nggak gampang berkeringat. Selain itu, outsole-nya menggunakan teknologi Stretchweb yang menyesuaikan pergerakan kaki kamu ketika memijak. 
-                  stock: 20
-                  category: "style"
-                  shop_name: "Adidas Shop"
-                  id_user_seller: 1
-                - id: 2
-                  product_name: "EQT Support ADV"
-                  price: 2299000
-                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/toOfkrbLHI.jpg"
-                  description: |
-                    EQT Support ADV juga merupakan keluaran seri Originals atau jenis sneakers dari Adidas. Dengan perpaduan bahan mesh dan kulit sintetis, sepatu ini memberikan aksen kalem dan sporty, serta rasa nyaman bagi pemakainya. Sepatu yang memiliki nilai seharga Rp. 2.299.000 ini hadir dengan desain yang unik, sehingga memberi kesan spesial bagi sang pemakai. 
-                  stock: 20
-                  category: "style"
-                  shop_name: "Adidas Shop"
-                  id_user_seller: 1
-
-              encoding:
-                file:
-                  contentType: image/png, image/jpeg 
-        "400" :
-          $ref : "#/components/responses/400"
-        "401" :
-          $ref : "#/components/responses/401"   
-        '500':
-          $ref: "#/components/responses/500"
-  /products/{id}:
-    get:
-      summary: "Get data by id product"
-      tags:
-        - "Product"
-      parameters:
-      - name : id
-        in : path
-        description: "Id Product to get data"
-        required: true
-        schema :
-          type: integer
-        examples:
-          1 :
-            description: "Id product 1 "
-            value : 1
-      responses:
-        "200":
-          description: "Success Update Product"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResult"
-              example:
-                message: "Product successfully Post"
-                data:
-                  id: 1
-                  product_name: "Adidas Response Plus"
-                  price: 2000000
-                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
-                  description: |
-                    Adidas Response Plus bisa jadi pilihan buat kamu yang senang lari sore di taman sekitar rumah. Menggunakan bahan air mesh, sepatu yang dibanderol dengan harga Rp. 1.599.000 ini mengedepankan fitur sirkulasi udara untuk kaki kamu biar terus terasa nyaman dan nggak gampang berkeringat. Selain itu, outsole-nya menggunakan teknologi Stretchweb yang menyesuaikan pergerakan kaki kamu ketika memijak. 
-                  stock: 20
-                  category: "style"
-                  shop_name: "Adidas Shop"
-                  id_user_seller: 1
-        "400" :
-          $ref : "#/components/responses/400"
-        "401" :
-          $ref : "#/components/responses/401"   
-        '500':
-          $ref: "#/components/responses/500"
-    put:
-      security:
-        - bearerAuth: []
-      summary: "Update data Product"
-      tags:
-        - "Product"
-      parameters:
-      - name : id
-        in : path
-        description: "Id Product to update data"
-        required: true
-        schema :
-          type: integer
-        examples:
-          1 :
-            description: "Id product 1 "
-            value : 1
-      requestBody:
-        description: "Update data Product"
-        required: true
-        content:
-          "multipart/form-data":
-            schema:
-              $ref: "#/components/schemas/EditProductObject"
-            example:
-              data:
-                product_name: "Adidas Response Plus"
-                price: 2000000
-                description: |
-                  Adidas Response Plus bisa jadi pilihan buat kamu yang senang lari sore di taman sekitar rumah. Menggunakan bahan air mesh, sepatu yang dibanderol dengan harga Rp. 1.599.000 ini mengedepankan fitur sirkulasi udara untuk kaki kamu biar terus terasa nyaman dan nggak gampang berkeringat. Selain itu, outsole-nya menggunakan teknologi Stretchweb yang menyesuaikan pergerakan kaki kamu ketika memijak. 
-                stock: 20
-                category: "style"                
-                file: "9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBhQSERUUExQVFRUWGRwaGBgYGB0dGxkcHxccGxocGxoYHCYgGxojHBsdHy8gJCgpLSwsGB4xNTAqNSYrLCkBCQoKDgwOGg8PGiklHx8pLCwpKSkpKSwpLCkpKSwpLCksKSwsLCkpKSkpLCkpKSwpLCwsKSwsLCksKSkpKSksKf/AABEIAJ0BQQMBIgACEQEDEQH/xAAcAAACAwEBAQEAAAAAAAAAAAAEBQIDBgEABwj/xABFEAACAQIEBAQDBgMGAwcFAAABAhEDIQAEEjEFQVFhBhMicTKBkRRCobHB8CNS0QcVM1Ni4RaS8TRygpOiwtIkQ1RVY//EABoBAAIDA."
-            encoding:
-              file:
-                contentType: image/png, image/jpeg   
-      responses:
-        "200":
-          description: "Success Update Product"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResult"
-              example:
-                message: "Product successfully Post"
-                data:
-                  id: 1
-                  product_name: "Adidas Response Plus"
-                  price: 2000000
-                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
-                  description: |
-                    Adidas Response Plus bisa jadi pilihan buat kamu yang senang lari sore di taman sekitar rumah. Menggunakan bahan air mesh, sepatu yang dibanderol dengan harga Rp. 1.599.000 ini mengedepankan fitur sirkulasi udara untuk kaki kamu biar terus terasa nyaman dan nggak gampang berkeringat. Selain itu, outsole-nya menggunakan teknologi Stretchweb yang menyesuaikan pergerakan kaki kamu ketika memijak. 
-                  stock: 20
-                  category: "style"
-                  shop_name: "Adidas Shop"
-                  id_user_seller: 1
-        "400" :
-          $ref : "#/components/responses/400"
-        "401" :
-          $ref : "#/components/responses/401"   
-        '500':
-          $ref: "#/components/responses/500"
-    delete:
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: "ID Product parameter"
-          required: true
+            example: ""
+        - name: name
+          description: "Title log"
+          required: false
+          in: query
           schema:
-            type: integer
-      summary: "Delete Product data"
-      tags:
-        - "Product"
+            type: string
+            example: "interview"
       responses:
-        "200":
-          description: "Success Delete Product Data"
+        '200':
+          description: A list of logs/feedback
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResult"
+                $ref: "#/components/schemas/SuccesArrayLogResult"
               example:
-                message: "Success Delete Product Data"
-        "400" :
-          $ref : "#/components/responses/400"
-        "401" :
-          $ref : "#/components/responses/401"   
-        '500':
-          $ref: "#/components/responses/500"
-
-########## CART ########
-  /carts:
-    post:
-      security:
-        - bearerAuth: []
-      summary: "Post data Cart"
-      tags:
-        - "Cart"
-      requestBody:
-        description: "Post data Cart"
-        required: true
-        content:
-          "application/json":
-            schema:
-              $ref: "#/components/schemas/InsertCartObject"
-            example:
-              qty: 1
-              notes: |
-                Warna Biru
-              id_product: 1
-      responses:
-        "201":
-          description: "Success Post data Cart"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResult"
-              example:
-                message: "Post Cart successfully"
-                data:
-                  id: 1
-                  product_name: "Adidas Response Plus"
-                  price: 2000000
-                  qty: 1
-                  sub_total: 2000000
-                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
-                  notes: |
-                    Warna Biru
-                  category: "style"
-                  shop_name: "Adidas Shop"
-                  id_product: 1
-                  id_user_seller: 1
-                  id_user_buyer: 2
-        "400" :
-          $ref : "#/components/responses/400"
-        "401" :
-          $ref : "#/components/responses/401"   
-        '500':
-          $ref: "#/components/responses/500"
-  /mycarts:
-    get:
-      security:
-        - bearerAuth: []
-      summary: "Get all user cart data by user token. Must login."
-      description: "Show all cart items from user that logged in."
-      tags:
-        - "Cart"
-      responses:
-        "200":
-          description: "Success Get user cart data. Show data group by Shop Name/Seller."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccesArrayCartResult"
-              example:
-                message: "Get Cart successfully"
-                data:
-                - id_user_seller: 1
-                  shop_name: "Adidas Shop"
-                  items:
+                  status: "Success"
+                  message: "Success get all logs"
+                  data:
                   - id: 1
-                    product_name: "Adidas Response Plus"
-                    price: 2000000
-                    qty: 1
-                    sub_total: 2000000
-                    image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
-                    notes: |
-                      Warna Biru
-                    category: "style"
-                    shop_name: "Adidas Shop"
-                    id_product: 1
-                    id_user_seller: 1
-                    id_user_buyer: 2   
+                    title: "Interview"
+                    fullname_user: "Ismail"
+                    create_date: "03 November 2022"
+                    feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+                    status: "None"
+                    id_mentee: 1
+                    id_user: 1
                   - id: 2
-                    product_name: "EQT Support ADV"
-                    price: 2299000
-                    qty: 1
-                    sub_total: 2299000                
-                    image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/toOfkrbLHI.jpg"
-                    notes: ""
-                    stock: 20
-                    category: "style"
-                    shop_name: "Adidas Shop"
-                    id_product: 2
-                    id_user_seller: 1
-                    id_user_buyer: 2          
-                - id_user_seller: 2
-                  shop_name: "Mangga Dua Computer Shop"
-                  items:
-                  - id: 3
-                    product_name: "KLEVV SO-DIMM DDR4 Value Series PC25600 3200MHZ 8GB"
-                    price: 380000
-                    qty: 1
-                    sub_total: 380000
-                    image_url: "https://images.tokopedia.net/img/cache/900/VqbcmM/2022/8/16/ceeb8319-5231-4e5b-bdc9-335330bd0078.jpg"
-                    notes: ""
-                    category: "tech"
-                    shop_name: "Mangga Dua Computer Shop"
-                    id_product: 3
-                    id_user_seller: 3
-                    id_user_buyer: 2   
-                  - id: 4
-                    product_name: "GALAX SONAR-04 Wired Gaming Headset - USB 7.1 Channel RGB"
-                    price: 495000
-                    qty: 1
-                    sub_total: 495000                
-                    image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/toOfkrbLHI.jpghttps://ecs7.tokopedia.net/img/cache/700/VqbcmM/2022/2/14/858492fc-5b10-4eb1-8782-fa28cb61911a.jpg"
-                    notes: ""
-                    stock: 20
-                    category: "tech"
-                    shop_name: "Mangga Dua Computer Shop"
-                    id_product: 4
-                    id_user_seller: 3
-                    id_user_buyer: 2          
+                    title: "Acceptance"
+                    fullname_user: "Yovan"
+                    create_date: "03 December 2022"
+                    feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+                    status: "Join class"
+                    id_mentee: 3
+                    id_user: 1
         "400" :
-          $ref : "#/components/responses/400"
+          $ref : "#/components/responses/400"  
         "401" :
-          $ref : "#/components/responses/401"   
-        '500':
-          $ref: "#/components/responses/500"
-  /carts/{id}:
-    get:
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: "ID_cart parameter"
-          required: true
-          schema:
-            type: integer
-      summary: "Get data Cart"
-      tags:
-        - "Cart"
-      responses:
-        "200":
-          description: "Success Get data Cart"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResult"
-              example:
-                message: "Get Cart successfully"
-                data:
-                  id: 1
-                  product_name: "Adidas Response Plus"
-                  price: 2000000
-                  qty: 1
-                  sub_total: 2000000
-                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
-                  notes: |
-                    Warna Biru
-                  category: "style"
-                  shop_name: "Adidas Shop"
-                  id_product: 1
-                  id_user_seller: 1
-                  id_user_buyer: 2
-        "400" :
-          $ref : "#/components/responses/400"
-        "401" :
-          $ref : "#/components/responses/401"   
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
         '500':
           $ref: "#/components/responses/500"
     put:
+      tags:
+        - Logs
+      summary: "Update data Log"
+      description: "Update data Log using request body and using id for reference at path parameter."
       security:
-        - bearerAuth: []
+        - JWTAuth: []
       parameters:
         - name: id
-          in: path
-          description: "ID cart detail parameter"
+          description: "Id log to update data"
           required: true
+          in: path
           schema:
+            description: "Id log 1"
             type: integer
-      summary: "Update data Cart detail"
-      tags:
-        - "Cart"
+            example: 1
       requestBody:
-        description: "Update data Cart"
         required: true
         content:
-          "application/json":
+          application/json:
             schema:
-              $ref: "#/components/schemas/EditCartObject"
+              $ref: "#/components/schemas/EditLogObject"
             example:
               id: 1
-              qty: 1
-              notes: |
-                Warna Biru
+              title: "Acceptance"
+              fullname_user: "Yovan"
+              create_date: "03 December 2022"
+              feedback: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla interdum convallis tortor eget scelerisque. Sed diam risus, tincidunt at lacinia a, hendrerit at massa. Maecenas tincidunt convallis rhoncus. Maecenas augue tellus, interdum non nulla a, bibendum dapibus nulla. Nullam at lorem diam. Integer nec urna commodo, gravida est fringilla, ultricies velit. Suspendisse potenti."
+              status: "Join class"
+              id_mentee: 1
       responses:
-        "200":
-          description: "Success update Cart detail"
+        '200':
+          description: "Success update data"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResult"              
+                $ref: "#/components/schemas/ResponseWithoutData" 
               example:
-                message: "Update Cart detail successfully"
-                data:
-                  id: 1
-                  product_name: "Adidas Response Plus"
-                  price: 2000000
-                  qty: 1
-                  sub_total: 2000000
-                  image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
-                  notes: |
-                    Warna Biru
-                  category: "style"
-                  shop_name: "Adidas Shop"
-                  id_product: 1
-                  id_user_seller: 1
-                  id_user_buyer: 1
+                  status: "Success"
+                  message: "Success Update Log"
         "400" :
-          $ref : "#/components/responses/400"
+          $ref : "#/components/responses/400"  
         "401" :
-          $ref : "#/components/responses/401"   
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
         '500':
           $ref: "#/components/responses/500"
+
     delete:
+      tags:
+        - Logs
+      summary: "Delete Log"
+      description: "Delete Log using id at path parameter as reference."
       security:
-        - bearerAuth: []
+        - JWTAuth: []
       parameters:
         - name: id
+          description: "Id log to delete"
+          required: true
           in: path
-          description: "ID cart parameter"
-          required: true
           schema:
+            description: "Id log 1."
             type: integer
-      summary: "Delete cart data"
-      tags:
-        - "Cart"
+            example: 1
       responses:
-        "200":
-          description: "Success Delete cart Data"
+        '200':
+          description: "Success Delete Log"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResult"
+                $ref: "#/components/schemas/ResponseWithoutData" 
               example:
-                message: "Success Delete cart Data"
+                  status: "Success"
+                  message: "Success Delete Log"
         "400" :
-          $ref : "#/components/responses/400"
+          $ref : "#/components/responses/400"  
         "401" :
-          $ref : "#/components/responses/401"   
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
         '500':
           $ref: "#/components/responses/500"
 
-  ######### ORDER #########
-
-  /orders/:
-    post:
-      security:
-        - bearerAuth: []
-      summary: "Insert new order"
-      description: "Ketika hit endpoint ini akan menjalankan proses ke midtrans."
-      tags:
-        - "Order"
-      requestBody:
-          description: |
-            Insert data Order. Id user buyer (yang login) tidak perlu disertakan. Akan ambil dari token.\n
-            Response Status ketika Order > \n
-            Order_status : \n
-              null = baru klik checkout; \n
-              process_order = saat klik bayar; \n
-              process_payment = saat proses midtrans; \n
-              complete_payment = status code dr midtrans 200; \n
-              pending_payment = status code midtrans 201; \n
-              failed_payment = status code lain; \n
-              complete_order = klik finish atau confirm dr BE atau confirm user? \n
-            Respons dari midtrans > \n
-              snap_token \n
-          required: true
-          content:
-            "application/json":
-              schema:
-                $ref: "#/components/schemas/InsertOrdertObject"
-              example:
-                shipping_name: "Luky"
-                shipping_phone: "088280020"
-                shipping_address: "Jakarta"
-                shop_name: "Adidas Shop"
-                gross_ammount: 2000000
-                id_user_seller: 1
-                id_user_buyer: 3
-      responses:
-        "201":
-          description: "Success Post data Order"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResult"
-              example:
-                message: "Post data Order successfully"
-                data:
-                  id: 1
-                  shipping_name: "Luky"
-                  shipping_phone: "088280020"
-                  shipping_address: "Jakarta"
-                  shop_name: "Adidas Shop"
-                  gross_ammount: 2000000
-                  order_status: "process_order"
-                  snap_token: "d379aa71-99eb-4dd1-b9bb-eefe813746e9"
-                  redirect_url: "https://app.sandbox.veritrans.co.id/snap/v2/vtweb/d379aa71-99eb-4dd1-b9bb-eefe813746e9"
-                  id_user_buyer: 2
-                  id_user_seller: 3
-        "400" :
-          $ref : "#/components/responses/400"
-        "401" :
-          $ref : "#/components/responses/401"   
-        '500':
-          $ref: "#/components/responses/500"
-  /myorders:
+#### Data Endpoint
+  /data:
     get:
-      security:
-        - bearerAuth: []
-      summary: "Get data Order for buyer"
-      description: "Show all transaction that made by buyer user. Get id from extract token. Same id_user_buyer, different id_user_seller."
       tags:
-        - "Order"
+        - Data
+      summary: "Get All Static Data"
+      description: "Get all static data that api needed."
+      security:
+        - JWTAuth: []
       responses:
-        "200":
-          description: "Success Get data Order"
+        '200':
+          description: A list of data
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccesArrayOrderResult"
+                $ref: "#/components/schemas/ResponseWithData"
               example:
-                message: "Get data Order successfully"
-                data:
-                  - id: 1
-                    id_user_buyer: 2
-                    id_user_seller: 3
-                    shipping_name: "Luky"
-                    shipping_phone: "088280020"
-                    shipping_address: "Jakarta"
-                    shop_name: "Adidas Shop"
-                    gross_ammount: 4000000
-                    order_status: "process_order"
-                    snap_token: "d379aa71-99eb-4dd1-b9bb-eefe813746e9"
-                    redirect_url: "https://app.sandbox.veritrans.co.id/snap/v2/vtweb/d379aa71-99eb-4dd1-b9bb-eefe813746e9"
-                  - id: 1
-                    id_user_buyer: 2
-                    id_user_seller: 4
-                    shipping_name: "Luky"
-                    shipping_phone: "088280020"
-                    shipping_address: "Jakarta"
-                    shop_name: "Mangga Dua store"
-                    gross_ammount: 9000000
-                    order_status: "complete_order"
-                    snap_token: "d379aa71-99eb-4dd1-b9bb-eefe813746e9"
-                    redirect_url: "https://app.sandbox.veritrans.co.id/snap/v2/vtweb/d379aa71-99eb-4dd1-b9bb-eefe813746e9"
+                  status: "Success"
+                  message: "Success get all data"
+                  data:
+                    mentee_status: [
+                      "None",
+                      "Active",
+                      "Non-Active",
+                      "Interview",
+                      "Join Class",
+                      "Unit 1",
+                      "Unit 2",
+                      "Unit 3",
+                      "Repeat Unit 1",
+                      "Repeat Unit 2",
+                      "Repeat Unit 3",
+                      "Placement",
+                      "Eleminated",
+                      "Graduate", 
+                    ]
+                    mentee_emergency_status: [
+                      "Orang Tua",
+                      "Kakek Nenek",
+                      "Saudara Kandung",
+                      "Saudara dari Orang Tua",
+                    ]
+                    mentee_education_type: [
+                      "Informatics",
+                      "Non-Informatics",
+                    ]
+                    mentee_gender: [
+                      "Male",
+                      "Female",
+                    ]
+                    team: [
+                      "Mentor",
+                      "Academic",
+                      "PeopleSkill",
+                      "Placement",
+                      "Admission"
+                    ]                    
+                    role: [
+                      "Admin",
+                      "User",
+                    ]                    
+                    user_status: [
+                      "Active",
+                      "Non-Active",
+                      "Deleted",
+                    ]                    
 
         "400" :
-          $ref : "#/components/responses/400"
+          $ref : "#/components/responses/400"  
         "401" :
-          $ref : "#/components/responses/401"   
+          $ref : "#/components/responses/401"  
+        "404" :
+          $ref : "#/components/responses/404"  
         '500':
           $ref: "#/components/responses/500"
-  /myshoporders:
-    get:
-      security:
-        - bearerAuth: []
-      summary: "Get data Order for seller."
-      description: "Show all transaction from seller shop. Get id user data from token. Same id_user_seller, different id_user_buyer."
-      tags:
-        - "Order"
-      responses:
-        "200":
-          description: "Success Get data shop orders."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccesArrayOrderResult"
-              example:
-                message: "Get data Order successfully"
-                data:
-                  - id: 1
-                    shipping_name: "Luky"
-                    shipping_phone: "088280020"
-                    shipping_address: "Jakarta"
-                    shop_name: "Adidas Shop"
-                    gross_ammount: 4000000
-                    order_status: "process_order"
-                    snap_token: "d379aa71-99eb-4dd1-b9bb-eefe813746e9"
-                    redirect_url: "https://app.sandbox.veritrans.co.id/snap/v2/vtweb/d379aa71-99eb-4dd1-b9bb-eefe813746e9"
-                    id_user_buyer: 2
-                    id_user_seller: 3
-                  - id: 2
-                    shipping_name: "Bambang"
-                    shipping_phone: "088280020"
-                    shipping_address: "Surabaya"
-                    shop_name: "Mangga Dua store"
-                    gross_ammount: 9000000
-                    order_status: "complete_order"
-                    snap_token: "d379aa71-99eb-4dd1-b9bb-eefe813746e9"
-                    redirect_url: "https://app.sandbox.veritrans.co.id/snap/v2/vtweb/d379aa71-99eb-4dd1-b9bb-eefe813746e9"
-                    id_user_buyer: 1
-                    id_user_seller: 3
 
-        "400" :
-          $ref : "#/components/responses/400"
-        "401" :
-          $ref : "#/components/responses/401"   
-        '500':
-          $ref: "#/components/responses/500"
-  /orders/{id}:
-    get:
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      summary: "Get detail data Order by id order"
-      tags:
-        - "Order"
-      responses:
-        "200":
-          description: "Success Get data Order"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResult"
-              example:
-                message: "Get data Order successfully"
-                data:
-                  id: 1
-                  id_user_buyer: 2
-                  id_user_seller: 3
-                  shipping_name: "Luky"
-                  shipping_phone: "088280020"
-                  shipping_address: "Jakarta"
-                  shop_name: "Adidas Shop"
-                  gross_ammount: 4000000
-                  order_status: "process_order"
-                  snap_token: "d379aa71-99eb-4dd1-b9bb-eefe813746e9"
-                  redirect_url: "https://app.sandbox.veritrans.co.id/snap/v2/vtweb/d379aa71-99eb-4dd1-b9bb-eefe813746e9"
-                  items:
-                  - id: 1
-                    product_name: "Adidas Response Plus"
-                    price: 2000000
-                    image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
-                    qty: 1
-                    sub_total: 2000000
-                    notes: |
-                      Warna Biru
-                    shop_name: "Adidas Shop"
-                    id_order: 2
-                    id_product: 1
-                    id_user_seller: 1
-                    id_user_buyer: 3
-                  - id: 2
-                    product_name: "EQT Support ADV"
-                    price: 2000000
-                    image_url: "https://ds393qgzrxwzn.cloudfront.net/resize/m720x480/cat1/img/images/0/ISzO90zLnp.jpg"
-                    qty: 1
-                    sub_total: 2000000
-                    notes: |
-                      Dark Blue
-                    shop_name: "Adidas Shop"
-                    id_order: 2
-                    id_product: 2
-                    id_user_seller: 1
-                    id_user_buyer: 3
-        "400" :
-          $ref : "#/components/responses/400"
-        "401" :
-          $ref : "#/components/responses/401"   
-        '500':
-          $ref: "#/components/responses/500"
+####################################
+#  COMPONENTS
+####################################
 components:
   securitySchemes:
-    "bearerAuth" :
+    JWTAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-  
+      description: "JWT Token that generate after login."
+
   schemas:
+
+### User Schemas
     "GetUserObject":
       type: object
       properties:
         "id":
           type: integer
-        "username":
+        "full_name":
           type: string
         "email":
           type: string
-        "name":
+        "team":
           type: string
-        "phone":
+        "role":
           type: string
-        "address":
+        "status":
           type: string    
-        "shop_name":
-          type: string  
-        "image_url":
-          type: string  
     "ArrayUserObj":
       type: array
       items :
@@ -1031,304 +1142,339 @@ components:
     "InsertUserObject":
       type: object
       properties:
-        "username":
+        "full_name":
           type: string
         "email":
           type: string
         "password":
           type: string
-        "name":
+        "team":
           type: string
-        "phone":
-          type: string
-        "address":
-          type: string    
-        "shop_name":
-          type: string    
-        "file":
-          type: string    
-          format: binary   
+        "status":
+          type: string  
     "EditUserObject":
       type: object
       properties:
-        "id":
-          type: integer
-        "username":
+        "full_name":
           type: string
         "email":
           type: string
         "password":
           type: string
+        "team":
+          type: string
+        "status":
+          type: string
+
+### Class Schemas
+    "GetClassObject":
+      type: object
+      properties:
+        "id":
+          type: integer
         "name":
           type: string
-        "phone":
+        "id_user":
+          type: string
+    "ArrayClassObj":
+      type: array
+      items :
+        $ref: "#/components/schemas/GetClassObject"
+    "InsertClassObject":
+      type: object
+      properties:
+        "name":
+          type: string
+        "id_user":
+          type: string
+    "EditClassObject":
+      type: object
+      properties:
+        "name":
+          type: string
+        "id_user":
+          type: string 
+
+### Mentee Schemas
+    "GetMenteeListObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "name":
+          type: string
+        "class_name":
+          type: string
+        "status":
+          type: string
+        "education_type":
+          type: string    
+        "gender":
+          type: string
+        "id_class":
+          type: string      
+    "ArrayMenteeListObj":
+      type: array
+      items :
+        $ref: "#/components/schemas/GetMenteeListObject"
+    "GetMenteeObject":
+      type: object
+      properties:
+        "id":
+          type: integer
+        "name":
+          type: string
+        "status":
+          type: string
+        "gender":
+          type: string
+        "nickname":
           type: string
         "address":
           type: string    
-        "shop_name":
+        "home_address":
           type: string    
-        "file":
+        "email":
           type: string    
-          format: binary  
-    "InsertProductObject":
-      type: object
-      properties:
-        "product_name":
-          type: string
-        "price":
-          type: integer
-        "description":
-          type: string
-        "image_url":
-          type: string
-        "stock":
-          type: integer
-        "category":
-          type: string
-        "file":
+        "telegram":
           type: string    
-          format: binary 
-    "EditProductObject":
-      type: object
-      properties:
-        "id":
-          type: integer      
-        "product_name":
-          type: string
-        "price":
-          type: integer
-        "description":
-          type: string
-        "image_url":
-          type: string
-        "stock":
-          type: integer
-        "category":
-          type: string
-        "file":
+        "discord":
           type: string    
-          format: binary 
-    "ProductObject":
-      type: object
-      properties:
-        "id":
-          type: integer
-        "product_name":
-          type: string
-        "price":
-          type: integer
-        "description":
-          type: string
-        "image_url":
-          type: string
-        "stock":
-          type: integer
-        "category":
-          type: string
-        "shop_name":
-          type: string
-        "id_user_seller":
-          type: string
-    "ArrProductObject":
+        "phone":
+          type: string    
+        "emergency_name":
+          type: string    
+        "emergency_phone":
+          type: string    
+        "emergency_status":
+          type: string    
+        "education_type":
+          type: string    
+        "education_major":
+          type: string    
+        "education_graduate":
+          type: string    
+        "class":
+          type: string      
+        "id_class":
+          type: integer 
+        "logs":
+          type: array
+          items:
+            $ref: "#/components/schemas/ArrayLogObj"  
+    "ArrayMenteeObj":
       type: array
-      items:
-        $ref: "#/components/schemas/ProductObject"   
-    "InsertCartObject":
+      items :
+        $ref: "#/components/schemas/GetMenteeObject"
+    "InsertMenteeObject":
       type: object
       properties:
-        "qty":
-          type: integer
-        "notes":
+        "name":
           type: string
-        "id_product":
+        "status":
           type: string
-    "EditCartObject":
+        "gender":
+          type: string
+        "nickname":
+          type: string
+        "address":
+          type: string    
+        "home_address":
+          type: string    
+        "email":
+          type: string    
+        "telegram":
+          type: string    
+        "discord":
+          type: string    
+        "phone":
+          type: string    
+        "emergency_name":
+          type: string    
+        "emergency_phone":
+          type: string    
+        "emergency_status":
+          type: string    
+        "education_type":
+          type: string    
+        "education_major":
+          type: string    
+        "education_graduate":
+          type: string    
+        "id_class":
+          type: string   
+    "EditMenteeObject":
+      type: object
+      properties:
+        "name":
+          type: string
+        "status":
+          type: string
+        "gender":
+          type: string
+        "nickname":
+          type: string
+        "address":
+          type: string    
+        "home_address":
+          type: string    
+        "email":
+          type: string    
+        "telegram":
+          type: string    
+        "discord":
+          type: string    
+        "phone":
+          type: string    
+        "emergency_name":
+          type: string    
+        "emergency_phone":
+          type: string    
+        "emergency_status":
+          type: string    
+        "education_type":
+          type: string    
+        "education_major":
+          type: string    
+        "education_graduate":
+          type: string    
+        "id_class":
+          type: string    
+
+### Log Schemas
+    "GetLogObject":
       type: object
       properties:
         "id":
           type: integer
-        "qty":
-          type: integer
-        "notes":
+        "title":
           type: string
-    "CartObject":
-      type: object
-      properties:
-        "id":
-          type: integer
-        "product_name":
+        "fullname_user":
           type: string
-        "price":
-          type: integer
-        "qty":
-          type: integer
-        "sub_total":
-          type: integer
-        "image_url":
+        "created_date":
           type: string
-        "notes":
-          type: string
-        "category":
-          type: string
-        "shop_name":
-          type: string
-        "id_product":
-          type: string
-        "id_user_seller":
-          type: string
-        "id_user_buyer":
-          type: string
-    "ArrCarttObject":
-      type: array
-      items:
-        $ref: "#/components/schemas/CartObject"  
-    "InsertOrdertObject":
-      type: object
-      properties:
-        "shipping_name":
-          type: string
-        "shipping_phone":
-          type: string
-        "shipping_address":
-          type: string
-        "shop_name":
-          type: string
-        "gross_ammount":
+        "feedback":
+          type: string  
+        "status":
+          type: string  
+        "id_mentee":
           type: integer  
-        "order_status":
-          type: string
-        "id_user_buyer":
-          type: integer
-        "id_user_seller":
-          type: integer
-    "OrdertObject":
-      type: object
-      properties:
-        "id":
-          type: integer
-        "shipping_name":
-          type: string
-        "shipping_phone":
-          type: string
-        "shipping_address":
-          type: string
-        "shop_name":
-          type: string
-        "gross_ammount":
+        "id_user":
           type: integer  
-        "order_status":
-          type: string
-        "snap_token":
-          type: string
-        "redirect_url":
-          type: string
-        "id_user_buyer":
-          type: integer
-        "id_user_seller":
-          type: integer
-    "SuccesArrayOrderResult":
+    "ArrayLogObj":
       type: array
-      items:
-        $ref: "#/components/schemas/OrdertObject"  
-    "InsertItemOrderObject":
+      items :
+        $ref: "#/components/schemas/GetLogObject"
+    "InsertLogObject":
       type: object
       properties:
-        "product_name":
+        "title":
           type: string
-        "price":
-          type: integer
-        "image_url":
-          type: string
-        "qty":
-          type: integer
-        "sub_total":
-          type: integer
-        "notes":
-          type: string
-        "shop_name":
-          type: string
-        "id_order":
-          type: integer
-        "id_product":
-          type: integer
-        "id_user_seller":
-          type: string
-        "id_user_buyer":
-          type: string
-    "ItemOrderObject":
+        "feedback":
+          type: string  
+        "status":
+          type: string  
+        "id_mentee":
+          type: integer  
+        "id_user":
+          type: integer  
+    "EditLogObject":
       type: object
       properties:
-        "id":
-          type: integer
-        "product_name":
+        "title":
           type: string
-        "price":
-          type: integer
-        "image_url":
-          type: string
-        "qty":
-          type: integer
-        "sub_total":
-          type: integer
-        "notes":
-          type: string
-        "shop_name":
-          type: string
-        "id_order":
-          type: integer
-        "id_product":
-          type: integer
-        "id_user_seller":
-          type: string
-        "id_user_buyer":
-          type: string
-    "ArrItemOrderObject":
-      type: array
-      items:
-        $ref: "#/components/schemas/ItemOrderObject"  
-    "SuccessResult":
+        "feedback":
+          type: string  
+        "status":
+          type: string  
+        "id_mentee":
+          type: integer  
+        "id_user":
+          type: integer  
+
+### Other Schemas
+    "ResponseWithoutData":
       type: object
       properties:
+        status:
+          type: string
+        message:
+          type: string
+    "ResponseWithData":
+      type: object
+      properties:
+        status:
+          type: string
         message: 
           type: string
         data:
           type: object
-    "SuccesLoginResult":
+    "SuccesArrayUserResult":
       type: object
       properties:
-        message: 
+        status:
           type: string
-        data:
-          type: object
-        token: 
-          type: string
-    "SuccesArrayProductResult":
-      type: object
-      properties:
         message: 
           type: string
         data:
           type: array
           items : 
-            $ref: "#/components/schemas/ArrProductObject"
-    "SuccesArrayCartResult":
+            $ref: "#/components/schemas/ArrayUserObj"
+    "SuccesArrayClassResult":
       type: object
       properties:
+        status:
+          type: string
         message: 
           type: string
         data:
           type: array
           items : 
-            $ref: "#/components/schemas/ArrCarttObject" 
-    "SuccesArrayItemOrderResult":
+            $ref: "#/components/schemas/ArrayClassObj" 
+    "SuccesArrayMenteeListResult":
       type: object
       properties:
+        status:
+          type: string
         message: 
           type: string
         data:
           type: array
           items : 
-            $ref: "#/components/schemas/ArrItemOrderObject" 
+            $ref: "#/components/schemas/ArrayMenteeListObj" 
+    "SuccessMenteeResult":
+      type: object
+      properties:
+        status:
+          type: string
+        message: 
+          type: string
+        data:
+          $ref: "#/components/schemas/GetMenteeObject" 
+    "SuccesArrayMenteeResult":
+      type: object
+      properties:
+        status:
+          type: string
+        message: 
+          type: string
+        data:
+          type: array
+          items : 
+            $ref: "#/components/schemas/ArrayMenteeObj" 
+    "SuccesArrayLogResult":
+      type: object
+      properties:
+        status:
+          type: string
+        message: 
+          type: string
+        data:
+          type: array
+          items : 
+            $ref: "#/components/schemas/ArrayLogObj" 
+
+### Responses Schemas
   responses:
     '200':
       description: "Success Process Data"
@@ -1374,43 +1520,19 @@ components:
                 type: string
           example:
             message: "Process Failed. User not authorized for this request."
+    '404':
+      description: "Page not found or wrong url. Please check again."
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: "Process Failed. User not authorized for this request."
     '500':
       description: "Error process on server"
-      content:
-        "application/json":
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-          example:
-            message: "Process Failed. Please check server."
-    '400_midtrans':
-      description: "Wrong Request From User"
-      content:
-        "application/json":
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-          example:
-            message: "Process Failed. Please check your input."
-    '401_midtrans':
-      description: "Authorization information is missing or invalid."
-      content:
-        "application/json":
-          schema:
-            type: object
-            properties:
-              error_message:
-                type: object
-          example:
-            error_message:
-            - "Access denied due to unauthorized transaction, please check client or server key"
-            - "Visit https://snap-docs.midtrans.com/#request-headers for more details"
-    '500_midtrans':
-      description: "Error from server"
       content:
         "application/json":
           schema:
