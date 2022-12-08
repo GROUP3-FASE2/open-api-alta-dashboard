@@ -350,7 +350,7 @@ paths:
             schema:
               $ref: "#/components/schemas/InsertClassObject"
             example:
-              name: "Frontend Engineer Batch 10"
+              class_name: "Frontend Engineer Batch 10"
               user_id: "1"
       responses:
         '201':
@@ -364,7 +364,7 @@ paths:
                 message: "Success Create New Class"
                 data:
                   id: 1
-                  name: "Frontend Engineer Batch 10"
+                  class_name: "Frontend Engineer Batch 10"
                   user_id: "1"
         "400" :
           $ref : "#/components/responses/400"  
@@ -408,10 +408,10 @@ paths:
                   message: "Success get all class"
                   data:
                     - id: 1
-                      name: "Frontend Engineer Batch 10"
+                      class_name: "Frontend Engineer Batch 10"
                       user_id: "1"
                     - id: 2
-                      name: "Backend Engineer Batch 13"
+                      class_name: "Backend Engineer Batch 13"
                       user_id: "2"
         "400" :
           $ref : "#/components/responses/400"  
@@ -451,7 +451,7 @@ paths:
                   message: "Success Get Class by Id"
                   data:
                     id: 1
-                    name: "Frontend Engineer Batch 10"
+                    class_name: "Frontend Engineer Batch 10"
                     user_id: "1"
         "400" :
           $ref : "#/components/responses/400"  
@@ -484,7 +484,7 @@ paths:
             schema:
                 $ref: "#/components/schemas/EditClassObject"
             example:
-              name: "Frontend Engineer Batch 10"
+              class_name: "Frontend Engineer Batch 10"
               user_id: "1"
       responses:
         '200':
